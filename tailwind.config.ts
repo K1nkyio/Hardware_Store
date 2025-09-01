@@ -53,15 +53,21 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sea: {
-					light: '#E0F2F7',
-					DEFAULT: '#1E88E5',
-					dark: '#0D47A1'
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
 				},
-				sand: {
-					light: '#F5F5DC',
-					DEFAULT: '#E6D2B5',
-					dark: '#D2B48C'
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
+				},
+				tool: {
+					yellow: 'hsl(var(--tool-yellow))',
+					orange: 'hsl(var(--tool-orange))',
+					red: 'hsl(var(--tool-red))',
+					blue: 'hsl(var(--tool-blue))',
+					green: 'hsl(var(--tool-green))',
+					gray: 'hsl(var(--tool-gray))'
 				}
 			},
 			borderRadius: {

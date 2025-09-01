@@ -5,11 +5,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Apartments from "./pages/Apartments";
-import BookingPage from "./pages/BookingPage";
-import Gallery from "./pages/Gallery";
+import Products from "./pages/Products";
+import Projects from "./pages/Projects";
+import Professionals from "./pages/Professionals";
+import Community from "./pages/Community";
 import Contact from "./pages/Contact";
-import Amenities from "./pages/Amenities";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -25,11 +25,11 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/apartments" element={<Apartments />} />
-            <Route path="/booking" element={<BookingPage />} />
-            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/professionals" element={<Professionals />} />
+            <Route path="/community" element={<Community />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/amenities" element={<Amenities />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

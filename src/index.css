@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,65 +7,91 @@
 
 @layer base {
   :root {
-    --background: 210 50% 98%;
-    --foreground: 210 40% 10%;
+    --background: 210 10% 99%;
+    --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 40% 10%;
+    --card-foreground: 215 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 40% 10%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 210 100% 40%;
+    --primary: 25 95% 53%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 40% 10%;
+    --secondary: 210 10% 95%;
+    --secondary-foreground: 215 25% 15%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 210 30% 40%;
+    --muted: 210 10% 95%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 210 40% 10%;
+    --accent: 210 10% 95%;
+    --accent-foreground: 215 25% 15%;
 
     --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 210 100% 40%;
+    --border: 210 15% 88%;
+    --input: 210 15% 88%;
+    --ring: 25 95% 53%;
 
-    --radius: 0.5rem;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --tool-yellow: 48 100% 67%;
+    --tool-orange: 25 95% 53%;
+    --tool-red: 0 84% 60%;
+    --tool-blue: 217 91% 60%;
+    --tool-green: 142 76% 36%;
+    --tool-gray: 215 15% 45%;
+
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 210 30% 12%;
-    --foreground: 210 20% 98%;
+    --background: 215 30% 8%;
+    --foreground: 210 10% 95%;
 
-    --card: 210 30% 15%;
-    --card-foreground: 210 20% 98%;
+    --card: 215 28% 12%;
+    --card-foreground: 210 10% 95%;
 
-    --popover: 210 30% 15%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 215 28% 12%;
+    --popover-foreground: 210 10% 95%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 95% 53%;
+    --primary-foreground: 215 30% 8%;
 
-    --secondary: 210 30% 20%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 215 25% 18%;
+    --secondary-foreground: 210 10% 95%;
 
-    --muted: 210 30% 20%;
-    --muted-foreground: 210 20% 60%;
+    --muted: 215 25% 18%;
+    --muted-foreground: 215 10% 65%;
 
-    --accent: 210 30% 20%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 215 25% 18%;
+    --accent-foreground: 210 10% 95%;
 
     --destructive: 0 70% 50%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive-foreground: 210 10% 95%;
 
-    --border: 210 30% 25%;
-    --input: 210 30% 25%;
-    --ring: 210 100% 60%;
+    --border: 215 25% 22%;
+    --input: 215 25% 22%;
+    --ring: 25 95% 53%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --tool-yellow: 48 100% 67%;
+    --tool-orange: 25 95% 53%;
+    --tool-red: 0 84% 60%;
+    --tool-blue: 217 91% 60%;
+    --tool-green: 142 76% 36%;
+    --tool-gray: 215 15% 45%;
   }
 }
 
@@ -77,45 +103,65 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
+    line-height: 1.6;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
   }
 }
 
 @layer components {
   .container {
-    @apply px-4 md:px-6 lg:px-8 mx-auto;
+    @apply px-4 md:px-6 lg:px-8 mx-auto max-w-7xl;
   }
   
   .btn-primary {
-    @apply bg-primary text-primary-foreground rounded-full px-6 py-2.5 font-medium transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98];
+    @apply bg-primary text-primary-foreground rounded-lg px-6 py-3 font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] hover:bg-primary/90;
+  }
+
+  .btn-tool-category {
+    @apply bg-gradient-to-br from-tool-orange to-tool-red text-white rounded-lg px-4 py-2 font-medium transition-all duration-300 hover:shadow-lg hover:shadow-tool-orange/30 hover:scale-105;
   }
   
   .section {
-    @apply py-12 md:py-16 lg:py-24;
+    @apply py-16 md:py-20 lg:py-28;
+  }
+
+  .section-sm {
+    @apply py-8 md:py-12 lg:py-16;
   }
   
   .glass-card {
-    @apply bg-white/70 dark:bg-black/30 backdrop-blur-lg border border-white/20 dark:border-white/10 rounded-xl shadow-lg;
+    @apply bg-card/90 backdrop-blur-sm border border-border rounded-xl shadow-lg;
   }
-  
-  .wave-animation {
-    animation: wave 12s linear infinite;
-    animation-delay: -2s;
-    transform-origin: center bottom;
+
+  .tool-card {
+    @apply bg-card border border-border rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30;
+  }
+
+  .project-card {
+    @apply bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40 group;
+  }
+
+  .category-gradient {
+    @apply bg-gradient-to-br from-tool-orange via-primary to-tool-red;
   }
   
   .page-transition-enter {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   
   .page-transition-enter-active {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 400ms, transform 400ms;
+    transition: opacity 500ms ease-out, transform 500ms ease-out;
   }
   
   .page-transition-exit {
@@ -124,6 +170,14 @@
   
   .page-transition-exit-active {
     opacity: 0;
-    transition: opacity 300ms;
+    transition: opacity 300ms ease-in;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--primary) / 0.05) 100%);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-tool-orange via-primary to-tool-red bg-clip-text text-transparent;
   }
 }

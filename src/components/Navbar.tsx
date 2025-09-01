@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingCart, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSelector from "./LanguageSelector";
@@ -15,9 +15,10 @@ export default function Navbar() {
   
   const navLinks = [
     { name: t.nav.home, path: "/" },
-    { name: t.nav.apartments, path: "/apartments" },
-    { name: t.nav.amenities, path: "/amenities" },
-    { name: t.nav.gallery, path: "/gallery" },
+    { name: t.nav.products, path: "/products" },
+    { name: t.nav.projects, path: "/projects" },
+    { name: t.nav.professionals, path: "/professionals" },
+    { name: t.nav.community, path: "/community" },
     { name: t.nav.contact, path: "/contact" }
   ];
 
@@ -34,9 +35,12 @@ export default function Navbar() {
   
   return <header className={cn("fixed top-0 left-0 right-0 z-50 transition-all duration-300", scrolled ? "bg-white/80 dark:bg-card/80 backdrop-blur-lg py-3 shadow-md" : "bg-transparent py-5")}>
       <nav className="container flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <LanguageSelector />
-        </div>
+        <Link to="/" className="flex items-center space-x-2 text-xl font-bold">
+          <div className="p-2 bg-primary rounded-lg">
+            <Wrench className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <span className="text-gradient">BuildMaster Pro</span>
+        </Link>
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-8">
@@ -47,16 +51,29 @@ export default function Navbar() {
             </li>)}
         </ul>
 
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="hidden md:flex items-center space-x-4">
+          <LanguageSelector />
           <ThemeToggle />
+          <Button variant="ghost" size="icon" className="relative">
+            <ShoppingCart className="h-5 w-5" />
+            <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
+              0
+            </span>
+          </Button>
           <Button asChild className="btn-primary">
-            <Link to="/booking">{t.nav.bookNow}</Link>
+            <Link to="/products">{t.nav.account}</Link>
           </Button>
         </div>
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center space-x-2">
           <ThemeToggle />
+          <Button variant="ghost" size="icon" className="relative">
+            <ShoppingCart className="h-5 w-5" />
+            <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
+              0
+            </span>
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-full">
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
@@ -69,7 +86,12 @@ export default function Navbar() {
           <div className="flex flex-col h-full justify-between">
             <div>
               <div className="flex justify-between mb-8">
-                <LanguageSelector />
+                <Link to="/" className="flex items-center space-x-2">
+                  <div className="p-1.5 bg-primary rounded-lg">
+                    <Wrench className="h-4 w-4 text-primary-foreground" />
+                  </div>
+                  <span className="font-bold text-gradient text-sm">BuildMaster Pro</span>
+                </Link>
                 <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="rounded-full">
                   <X className="h-6 w-6" />
                 </Button>
@@ -84,8 +106,8 @@ export default function Navbar() {
             </div>
             
             <Button asChild className="w-full btn-primary mt-6">
-              <Link to="/booking" onClick={() => setMobileMenuOpen(false)}>
-                {t.nav.bookNow}
+              <Link to="/products" onClick={() => setMobileMenuOpen(false)}>
+                {t.nav.account}
               </Link>
             </Button>
           </div>

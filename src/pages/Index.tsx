@@ -2,48 +2,163 @@ import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
-import BookingForm from "@/components/BookingForm";
+import ProductCard, { ProductProps } from "@/components/ProductCard";
+import CategoryCard from "@/components/CategoryCard";
+import ProjectGuideCard, { ProjectGuideProps } from "@/components/ProjectGuideCard";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import ApartmentCard, { ApartmentProps } from "@/components/ApartmentCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Wifi, Utensils, Waves, LifeBuoy, MapPin, Coffee } from "lucide-react";
+import { 
+  ArrowRight, 
+  Zap, 
+  Hammer, 
+  Wrench, 
+  Paintbrush, 
+  TreePine,
+  Shield,
+  Settings,
+  Lightbulb,
+  Users,
+  BookOpen,
+  Award,
+  Clock,
+  Truck
+} from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// Sample apartments data
-const featuredApartments: ApartmentProps[] = [
+// Sample categories data
+const categories = [
   {
-    id: "1",
-    name: "Deluxe Sea View Suite",
-    description: "Luxurious suite with panoramic sea views, modern amenities, and a private balcony.",
-    price: 180,
-    capacity: 2,
-    size: 45,
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop",
-    location: "Beachfront",
-    features: ["Wi-Fi", "Kitchen", "Bathroom", "Air Conditioning", "TV", "Balcony"]
+    name: "Power Tools",
+    description: "Professional-grade drills, saws, sanders, and more",
+    icon: Zap,
+    image: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=500&h=300&fit=crop",
+    productCount: 245,
+    href: "/products?category=power-tools"
   },
   {
-    id: "2",
-    name: "Premium Family Apartment",
-    description: "Spacious apartment ideal for families, with full kitchen and stunning coastal views.",
-    price: 250,
-    capacity: 4,
-    size: 75,
-    image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop",
-    location: "Second row",
-    features: ["Wi-Fi", "Kitchen", "Bathroom", "Air Conditioning", "TV", "Washing Machine"]
+    name: "Hand Tools", 
+    description: "Quality hammers, screwdrivers, pliers, and essentials",
+    icon: Hammer,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop",
+    productCount: 189,
+    href: "/products?category=hand-tools"
+  },
+  {
+    name: "Hardware",
+    description: "Screws, bolts, fasteners, and building hardware",
+    icon: Settings,
+    image: "https://images.unsplash.com/photo-1581092795442-7d4b372c902d?w=500&h=300&fit=crop",
+    productCount: 312,
+    href: "/products?category=hardware"
+  },
+  {
+    name: "Paint & Supplies",
+    description: "Premium paints, brushes, rollers, and finishes",
+    icon: Paintbrush,
+    image: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=500&h=300&fit=crop",
+    productCount: 156,
+    href: "/products?category=paint"
+  },
+  {
+    name: "Garden & Outdoor",
+    description: "Landscaping tools, outdoor equipment, and supplies",
+    icon: TreePine,
+    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop",
+    productCount: 98,
+    href: "/products?category=garden"
+  },
+  {
+    name: "Safety Equipment",
+    description: "Protective gear, safety equipment, and workwear",
+    icon: Shield,
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500&h=300&fit=crop",
+    productCount: 87,
+    href: "/products?category=safety"
+  }
+];
+
+// Sample featured products
+const featuredProducts: ProductProps[] = [
+  {
+    id: "1",
+    name: "DEWALT 20V MAX Cordless Drill Driver",
+    description: "High-performance brushless motor delivers 340 UWO and 1,825 in-lbs of torque",
+    price: 149.99,
+    originalPrice: 199.99,
+    rating: 4.8,
+    reviewCount: 342,
+    image: "https://images.unsplash.com/photo-1585435557343-3b092031e57c?w=400&h=400&fit=crop",
+    category: "Power Tools",
+    brand: "DEWALT",
+    inStock: true,
+    isBestSeller: true,
+    discount: 25
+  },
+  {
+    id: "2", 
+    name: "Klein Tools 11-in-1 Screwdriver Set",
+    description: "Professional multi-bit screwdriver with cushion grip handle",
+    price: 24.99,
+    rating: 4.7,
+    reviewCount: 156,
+    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop",
+    category: "Hand Tools",
+    brand: "Klein Tools",
+    inStock: true,
+    isNew: true
   },
   {
     id: "3",
-    name: "Executive Beach Studio",
-    description: "Elegant studio with direct beach access, modern design, and premium finishes.",
-    price: 150,
-    capacity: 2,
-    size: 35,
-    image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800&h=600&fit=crop",
-    location: "Beachfront",
-    features: ["Wi-Fi", "Kitchenette", "Bathroom", "Air Conditioning", "TV"]
+    name: "Bosch Random Orbital Sander",
+    description: "Variable speed control with efficient dust collection system",
+    price: 89.99,
+    rating: 4.6,
+    reviewCount: 89,
+    image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=400&fit=crop",
+    category: "Power Tools", 
+    brand: "Bosch",
+    inStock: true
+  }
+];
+
+// Sample project guides
+const projectGuides: ProjectGuideProps[] = [
+  {
+    id: "1",
+    title: "Build a Modern Floating Shelf",
+    description: "Learn to create sleek floating shelves that add both style and storage to any room.",
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
+    difficulty: "Beginner",
+    duration: "2-3 hours",
+    category: "Woodworking",
+    materials: ["Wood board", "Wall brackets", "Screws"],
+    tools: ["Drill", "Level", "Stud finder"],
+    steps: 8
+  },
+  {
+    id: "2",
+    title: "Install Smart Light Switches",
+    description: "Upgrade your home with smart switches for better lighting control and energy efficiency.",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    difficulty: "Intermediate", 
+    duration: "1-2 hours",
+    category: "Electrical",
+    materials: ["Smart switches", "Wire nuts", "Electrical tape"],
+    tools: ["Screwdriver", "Wire stripper", "Voltage tester"],
+    steps: 12
+  },
+  {
+    id: "3",
+    title: "Build a Garden Planter Box",
+    description: "Create a beautiful raised garden bed perfect for herbs, vegetables, or flowers.",
+    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop",
+    difficulty: "Beginner",
+    duration: "4-6 hours", 
+    category: "Garden",
+    materials: ["Cedar boards", "Wood screws", "Landscape fabric"],
+    tools: ["Circular saw", "Drill", "Measuring tape"],
+    steps: 10
   }
 ];
 
@@ -51,41 +166,40 @@ export default function Index() {
   const { t } = useLanguage();
   
   useEffect(() => {
-    // Scroll to top when component mounts
     window.scrollTo(0, 0);
   }, []);
-  
-  // Feature items
+
+  // Feature items for the features section
   const features = [
     {
-      icon: <Waves className="h-8 w-8 text-primary" />,
-      title: t.home.amenities.features.beachfront.title,
-      description: t.home.amenities.features.beachfront.description
+      icon: <Lightbulb className="h-8 w-8 text-primary" />,
+      title: t.home.features.items.expertGuidance.title,
+      description: t.home.features.items.expertGuidance.description
     },
     {
-      icon: <LifeBuoy className="h-8 w-8 text-primary" />,
-      title: t.home.amenities.features.pools.title,
-      description: t.home.amenities.features.pools.description
+      icon: <Award className="h-8 w-8 text-primary" />,
+      title: t.home.features.items.qualityTools.title,
+      description: t.home.features.items.qualityTools.description
     },
     {
-      icon: <Utensils className="h-8 w-8 text-primary" />,
-      title: t.home.amenities.features.restaurant.title,
-      description: t.home.amenities.features.restaurant.description
+      icon: <Settings className="h-8 w-8 text-primary" />,
+      title: t.home.features.items.projectPlanning.title,
+      description: t.home.features.items.projectPlanning.description
     },
     {
-      icon: <Wifi className="h-8 w-8 text-primary" />,
-      title: t.home.amenities.features.wifi.title,
-      description: t.home.amenities.features.wifi.description
+      icon: <Users className="h-8 w-8 text-primary" />,
+      title: t.home.features.items.communitySupport.title,
+      description: t.home.features.items.communitySupport.description
     },
     {
-      icon: <Coffee className="h-8 w-8 text-primary" />,
-      title: t.home.amenities.features.bar.title,
-      description: t.home.amenities.features.bar.description
+      icon: <Truck className="h-8 w-8 text-primary" />,
+      title: t.home.features.items.fastDelivery.title,
+      description: t.home.features.items.fastDelivery.description
     },
     {
-      icon: <MapPin className="h-8 w-8 text-primary" />,
-      title: t.home.amenities.features.location.title,
-      description: t.home.amenities.features.location.description
+      icon: <Wrench className="h-8 w-8 text-primary" />,
+      title: t.home.features.items.proServices.title,
+      description: t.home.features.items.proServices.description
     }
   ];
   
@@ -115,7 +229,7 @@ export default function Index() {
                   {t.home.welcome.description2}
                 </p>
                 <Button asChild className="btn-primary">
-                  <Link to="/about">
+                  <Link to="/products">
                     {t.home.welcome.learnMore} <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -124,22 +238,22 @@ export default function Index() {
               <div className="relative animate-fade-in [animation-delay:300ms]">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&h=600&fit=crop"
-                    alt="Seaside view" 
+                    src="https://images.unsplash.com/photo-1581092795442-7d4b372c902d?w=800&h=600&fit=crop"
+                    alt="Professional workshop with tools" 
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="absolute -bottom-6 -left-6 w-2/3 rounded-2xl overflow-hidden shadow-xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1545579133-99bb5ab189bd?w=400&h=300&fit=crop"
-                    alt="Luxury apartment interior" 
+                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop"
+                    alt="Hand tools collection" 
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="absolute -top-6 -right-6 w-1/2 rounded-2xl overflow-hidden shadow-xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&h=300&fit=crop"
-                    alt="Pool view" 
+                    src="https://images.unsplash.com/photo-1585435557343-3b092031e57c?w=400&h=300&fit=crop"
+                    alt="Power tools" 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -147,71 +261,100 @@ export default function Index() {
             </div>
           </div>
         </section>
-        
-        {/* Booking Form Section */}
-        <section className="relative py-20 bg-gradient-to-r from-sea-light to-white dark:from-sea-dark dark:to-background overflow-hidden">
-          <div className="container relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="animate-fade-in">
-                <span className="text-sm text-primary font-medium uppercase tracking-wider">
-                  {t.home.booking.subtitle}
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-6">
-                  {t.home.booking.title}
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  {t.home.booking.description}
-                </p>
-                <ul className="space-y-3 mb-8">
-                  {t.home.booking.benefits.map((item, index) => (
-                    <li key={index} className="flex items-center">
-                      <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3">
-                        <ArrowRight className="h-3 w-3" />
-                      </div>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <BookingForm />
-            </div>
-          </div>
-          
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10">
-            <div className="absolute top-10 right-10 w-64 h-64 rounded-full bg-primary/50 blur-3xl" />
-            <div className="absolute bottom-10 right-40 w-48 h-48 rounded-full bg-sea-light blur-3xl" />
-          </div>
-        </section>
-        
-        {/* Featured Apartments */}
-        <section className="section">
+
+        {/* Categories Section */}
+        <section className="section bg-muted/30">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
               <span className="text-sm text-primary font-medium uppercase tracking-wider">
-                {t.home.featuredApartments.subtitle}
+                {t.home.categories.subtitle}
               </span>
               <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-                {t.home.featuredApartments.title}
+                {t.home.categories.title}
               </h2>
               <p className="text-muted-foreground">
-                {t.home.featuredApartments.description}
+                {t.home.categories.description}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredApartments.map((apartment, index) => (
-                <div key={apartment.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
-                  <ApartmentCard apartment={apartment} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map((category, index) => (
+                <div key={index} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                  <CategoryCard {...category} />
                 </div>
               ))}
             </div>
             
             <div className="text-center mt-12">
               <Button asChild className="btn-primary">
-                <Link to="/apartments">
-                  {t.home.featuredApartments.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
+                <Link to="/products">
+                  {t.home.categories.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+        
+        {/* Featured Products */}
+        <section className="section">
+          <div className="container">
+            <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
+              <span className="text-sm text-primary font-medium uppercase tracking-wider">
+                {t.home.featuredProducts.subtitle}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+                {t.home.featuredProducts.title}
+              </h2>
+              <p className="text-muted-foreground">
+                {t.home.featuredProducts.description}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProducts.map((product, index) => (
+                <div key={product.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Button asChild className="btn-primary">
+                <Link to="/products">
+                  {t.home.featuredProducts.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Project Guides */}
+        <section className="section bg-muted/30">
+          <div className="container">
+            <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
+              <span className="text-sm text-primary font-medium uppercase tracking-wider">
+                {t.home.projectGuides.subtitle}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+                {t.home.projectGuides.title}
+              </h2>
+              <p className="text-muted-foreground">
+                {t.home.projectGuides.description}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projectGuides.map((project, index) => (
+                <div key={project.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                  <ProjectGuideCard project={project} />
+                </div>
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Button asChild className="btn-primary">
+                <Link to="/projects">
+                  {t.home.projectGuides.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -226,13 +369,13 @@ export default function Index() {
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
               <span className="text-sm text-primary font-medium uppercase tracking-wider">
-                {t.home.amenities.subtitle}
+                {t.home.features.subtitle}
               </span>
               <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-                {t.home.amenities.title}
+                {t.home.features.title}
               </h2>
               <p className="text-muted-foreground">
-                {t.home.amenities.description}
+                {t.home.features.description}
               </p>
             </div>
             
@@ -253,6 +396,30 @@ export default function Index() {
             </div>
           </div>
         </section>
+
+        {/* Professional Services CTA */}
+        <section className="section">
+          <div className="container">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="glass-card p-8 md:p-12 rounded-2xl animate-fade-in">
+                <span className="text-sm text-primary font-medium uppercase tracking-wider">
+                  {t.home.professionalServices.subtitle}
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+                  {t.home.professionalServices.title}
+                </h2>
+                <p className="text-muted-foreground mb-8 text-lg">
+                  {t.home.professionalServices.description}
+                </p>
+                <Button asChild size="lg" className="btn-primary">
+                  <Link to="/professionals">
+                    {t.home.professionalServices.findPros} <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
         
         {/* CTA Section */}
         <section className="relative py-24 bg-primary/5">
@@ -265,28 +432,9 @@ export default function Index() {
                 {t.home.cta.description}
               </p>
               <Button asChild size="lg" className="btn-primary">
-                <Link to="/booking">{t.home.cta.bookNow}</Link>
+                <Link to="/products">{t.home.cta.shopNow}</Link>
               </Button>
             </div>
-          </div>
-          
-          {/* Decorative waves */}
-          <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden">
-            <svg 
-              className="absolute bottom-0 w-full h-24 fill-background"
-              preserveAspectRatio="none"
-              viewBox="0 0 1440 74"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path 
-                d="M0,37.1L40,34.5C80,32,160,27,240,29.6C320,32,400,42,480,42.9C560,44,640,35,720,32.1C800,30,880,34,960,40.8C1040,47,1120,56,1200,56.6C1280,57,1360,48,1400,43.3L1440,39.1L1440,74L1400,74C1360,74,1280,74,1200,74C1120,74,1040,74,960,74C880,74,800,74,720,74C640,74,560,74,480,74C400,74,320,74,240,74C160,74,80,74,40,74L0,74Z"
-                className="animate-wave opacity-50"
-              />
-              <path 
-                d="M0,37.1L40,34.5C80,32,160,27,240,29.6C320,32,400,42,480,42.9C560,44,640,35,720,32.1C800,30,880,34,960,40.8C1040,47,1120,56,1200,56.6C1280,57,1360,48,1400,43.3L1440,39.1L1440,74L1400,74C1360,74,1280,74,1200,74C1120,74,1040,74,960,74C880,74,800,74,720,74C640,74,560,74,480,74C400,74,320,74,240,74C160,74,80,74,40,74L0,74Z"
-                className="animate-wave opacity-100 [animation-delay:-4s]"
-              />
-            </svg>
           </div>
         </section>
       </main>

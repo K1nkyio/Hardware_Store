@@ -1,396 +1,244 @@
 export const en = {
   nav: {
     home: "Home",
-    apartments: "Apartments",
-    amenities: "Amenities",
-    gallery: "Gallery",
+    products: "Products",
+    projects: "Projects", 
+    professionals: "Pro Services",
+    community: "Community",
     contact: "Contact",
-    bookNow: "Book Now"
+    cart: "Cart",
+    account: "My Account"
   },
   hero: {
-    subtitle: "BEACHFRONT LUXURY ACCOMMODATION",
-    title: "Experience Seaside Tranquility",
-    description: "Discover our exclusive collection of luxury beachfront apartments and hotel rooms, offering unparalleled comfort and breathtaking sea views.",
-    bookStay: "Book Your Stay",
-    exploreApartments: "Explore Apartments",
+    subtitle: "PROFESSIONAL HARDWARE & TOOLS",
+    title: "Build Your Dreams with Confidence",
+    description: "From weekend warriors to trade professionals—discover premium tools, expert guidance, and a community that empowers every project from start to finish.",
+    shopNow: "Shop Now",
+    findProject: "Find Your Project",
     scrollDown: "Scroll Down"
   },
   footer: {
-    description: "Luxurious beachfront apartments and hotel rooms with stunning sea views, offering the perfect blend of comfort and elegance for your dream vacation.",
+    description: "Your complete hardware destination with professional-grade tools, expert guidance, and a community of makers ready to help you tackle any project.",
     quickLinks: "Quick Links",
     contact: "Contact",
-    newsletter: "Newsletter",
-    newsletterDesc: "Subscribe to our newsletter for special deals and updates.",
+    newsletter: "Newsletter", 
+    newsletterDesc: "Get project tips, new product alerts, and exclusive deals.",
     yourEmail: "Your email address",
     subscribe: "Subscribe",
     allRights: "All rights reserved."
   },
-  bookingForm: {
-    title: "Book Your Stay",
-    checkIn: "Check-in Date",
-    checkOut: "Check-out Date",
-    adults: "Adults",
-    children: "Children",
-    adult: "Adult",
-    child: "Child",
-    selectDate: "Select date",
-    checkAvailability: "Check Availability",
-    bookingConfirmed: "Booking Confirmed!"
+  search: {
+    title: "Find What You Need",
+    placeholder: "Search tools, materials, or project guides...",
+    byProject: "Search by Project",
+    byCategory: "Browse Categories", 
+    emergencyRepair: "Emergency Repairs"
   },
   testimonials: {
-    title: "What Our Guests Say",
-    description: "Discover why our guests keep coming back to MareSereno for their seaside getaways."
+    title: "What Our Community Says",
+    description: "Real feedback from DIYers, professionals, and makers who trust us with their projects."
   },
   notFound: {
-    title: "Page Not Found",
-    description: "We couldn't find the page you were looking for. Perhaps you took a wrong turn in paradise?",
+    title: "Page Not Found", 
+    description: "Looks like this page took a wrong turn in the workshop. Let's get you back on track!",
     returnHome: "Return Home"
   },
   home: {
     welcome: {
-      subtitle: "Welcome to MareSereno",
-      title: "Luxury Seaside Accommodations",
-      description1: "Nestled on the pristine Mediterranean coastline, MareSereno offers an exquisite collection of luxury apartments and hotel rooms. Our beachfront accommodations combine elegant design with modern comfort, creating the perfect setting for an unforgettable seaside getaway.",
-      description2: "Whether you're seeking a romantic escape, a family vacation, or a peaceful retreat, our diverse range of accommodations caters to every preference and need. Each space is thoughtfully designed to provide panoramic sea views and direct beach access.",
+      subtitle: "Welcome to BuildMaster Pro",
+      title: "Your Complete Hardware Ecosystem",
+      description1: "More than just a hardware store—we're your project partner from conception to completion. Whether you're tackling your first DIY project or managing a multi-site construction operation, our intelligent platform connects you with the right tools, knowledge, and community support.",
+      description2: "Experience personalized product recommendations, step-by-step project guidance, and access to vetted local professionals who can help when you need expert assistance.",
       learnMore: "Learn More"
     },
-    booking: {
-      subtitle: "Book Your Stay",
-      title: "Reserve Your Perfect Getaway",
-      description: "Take the first step towards your dream vacation by checking availability and securing your preferred dates. Our simple booking process ensures a seamless experience from reservation to arrival.",
-      benefits: ["Instant confirmation", "Best rate guarantee", "Flexible cancellation options", "Secure payment"]
+    categories: {
+      subtitle: "Shop by Category", 
+      title: "Find Everything You Need",
+      description: "Browse our comprehensive collection of professional-grade tools and materials, organized by project type and skill level.",
+      viewAll: "View All Categories"
     },
-    featuredApartments: {
-      subtitle: "Our Accommodations",
-      title: "Featured Apartments",
-      description: "Discover our most popular accommodation options, each offering a perfect blend of comfort, style, and breathtaking sea views.",
-      viewAll: "View All Apartments"
+    featuredProducts: {
+      subtitle: "Featured Products",
+      title: "Top Picks for Your Projects", 
+      description: "Discover our most popular tools and materials, chosen by professionals and trusted by DIYers nationwide.",
+      viewAll: "View All Products"
     },
-    amenities: {
-      subtitle: "Hotel Amenities",
-      title: "Experience The Best",
-      description: "Enjoy our premium facilities and services designed to make your stay exceptional.",
-      features: {
-        beachfront: {
-          title: "Beachfront Location",
-          description: "Direct access to pristine beaches with crystal clear waters."
+    projectGuides: {
+      subtitle: "Project Inspiration",
+      title: "Step-by-Step Guides",
+      description: "Learn new skills and tackle ambitious projects with our comprehensive tutorials and expert tips.",
+      viewAll: "Browse All Projects"
+    },
+    professionalServices: {
+      subtitle: "Professional Network",
+      title: "Need Expert Help?",
+      description: "Connect with vetted local contractors, electricians, plumbers, and specialists in your area.",
+      findPros: "Find Professionals"
+    },
+    features: {
+      subtitle: "Why Choose BuildMaster Pro",
+      title: "Built for Makers Like You",
+      description: "Experience the difference with our comprehensive hardware ecosystem.",
+      items: {
+        expertGuidance: {
+          title: "Expert Guidance",
+          description: "Step-by-step tutorials and professional tips for every skill level."
         },
-        pools: {
-          title: "Swimming Pools",
-          description: "Relax by our infinity pools with stunning sea views."
+        qualityTools: {
+          title: "Professional Quality",
+          description: "Premium tools and materials trusted by contractors nationwide."
         },
-        restaurant: {
-          title: "Gourmet Restaurant",
-          description: "Enjoy exquisite local and international cuisine."
+        projectPlanning: {
+          title: "Smart Project Planning", 
+          description: "AI-powered recommendations and material calculators for accurate planning."
         },
-        wifi: {
-          title: "High-Speed Wi-Fi",
-          description: "Stay connected with complimentary high-speed internet."
+        communitySupport: {
+          title: "Community Support",
+          description: "Connect with fellow makers and get advice from experienced professionals."
         },
-        bar: {
-          title: "Beach Bar & Café",
-          description: "Refreshing drinks and snacks served right on the beach."
+        fastDelivery: {
+          title: "Fast & Flexible Delivery",
+          description: "Same-day delivery, jobsite direct, or convenient store pickup options."
         },
-        location: {
-          title: "Prime Location",
-          description: "Close to local attractions, shops, and restaurants."
+        proServices: {
+          title: "Professional Network",
+          description: "Access vetted contractors and specialists for complex projects."
         }
       }
     },
     cta: {
-      title: "Ready for Your Dream Vacation?",
-      description: "Book your stay today and experience the perfect blend of luxury, comfort, and stunning sea views.",
-      bookNow: "Book Now"
+      title: "Ready to Start Your Next Project?",
+      description: "Join thousands of satisfied customers who trust BuildMaster Pro for all their hardware needs.",
+      shopNow: "Shop Now"
     }
   },
-  apartments: {
-    title: "Our Apartments & Rooms",
-    subtitle: "Discover our selection of premium accommodations, ranging from cozy studios to luxurious penthouses.",
+  products: {
+    title: "Products & Tools",
+    subtitle: "Professional-grade tools and materials for every project and skill level.",
     filters: {
-      guests: "Guests",
-      anyGuests: "Any number of guests",
-      onePlus: "1+ guests",
-      twoPlus: "2+ guests",
-      threePlus: "3+ guests",
-      fourPlus: "4+ guests",
-      location: "Location",
-      allLocations: "All locations",
-      priceRange: "Price Range",
+      category: "Category",
+      allCategories: "All Categories",
+      priceRange: "Price Range", 
+      brand: "Brand",
+      rating: "Rating",
+      availability: "Availability", 
+      inStock: "In Stock",
       showing: "Showing",
       of: "of",
-      accommodations: "accommodations",
+      products: "products",
       resetFilters: "Reset Filters",
-      noMatch: "No apartments match your filters",
+      noMatch: "No products match your filters",
       adjustFilters: "Try adjusting your filter criteria to see more options.",
       viewDetails: "View Details",
-      features: "features",
-      more: "more"
+      addToCart: "Add to Cart",
+      compareProducts: "Compare Products"
+    },
+    categories: {
+      powerTools: "Power Tools",
+      handTools: "Hand Tools", 
+      lumber: "Lumber & Building Materials",
+      plumbing: "Plumbing",
+      electrical: "Electrical",
+      hardware: "Hardware & Fasteners",
+      paint: "Paint & Supplies",
+      garden: "Garden & Outdoor",
+      safety: "Safety Equipment"
     }
   },
-  gallery: {
-    title: "Photo Gallery",
-    subtitle: "Explore our seaside paradise through captivating imagery.",
+  projects: {
+    title: "Project Guides & Inspiration",
+    subtitle: "Learn, build, and create with confidence using our expert-crafted tutorials.",
     filters: {
-      all: "All",
-      exterior: "Exterior",
-      rooms: "Rooms",
-      amenities: "Amenities"
+      skill: "Skill Level",
+      allSkills: "All Skill Levels",
+      beginner: "Beginner",
+      intermediate: "Intermediate", 
+      advanced: "Advanced",
+      category: "Project Type",
+      duration: "Time Required",
+      showing: "Showing",
+      guides: "guides",
+      startProject: "Start This Project"
     }
   },
-  booking: {
-    title: "Book Your Stay",
-    subtitle: "Complete your reservation in a few simple steps.",
-    steps: {
-      chooseRoom: "Choose Room",
-      guestDetails: "Guest Details",
-      confirmation: "Confirmation"
+  professionals: {
+    title: "Professional Services",
+    subtitle: "Connect with vetted local contractors and specialists for your project needs.",
+    findPros: "Find Professionals",
+    categories: {
+      general: "General Contractors",
+      electrical: "Electricians", 
+      plumbing: "Plumbers",
+      hvac: "HVAC Specialists",
+      roofing: "Roofing Contractors",
+      flooring: "Flooring Experts"
     },
-    dates: {
-      selectDates: "Select Dates and Guests",
-      checkIn: "Check-in Date",
-      checkOut: "Check-out Date",
-      adults: "Adults",
-      children: "Children",
-      adult: "Adult",
-      child: "Child",
-      selectDate: "Select date"
+    getQuote: "Get Quote",
+    viewProfile: "View Profile",
+    verified: "Verified Professional"
+  },
+  community: {
+    title: "BuildMaster Community",
+    subtitle: "Share projects, get advice, and connect with fellow makers.",
+    showcase: {
+      title: "Project Showcase",
+      description: "See amazing projects from our community members.",
+      shareProject: "Share Your Project"
     },
-    accommodationSelect: {
-      title: "Select Your Accommodation",
-      guests: "Guests",
-      selected: "Selected",
-      select: "Select",
-      continue: "Continue"
+    forum: {
+      title: "Help & Discussion",
+      description: "Get answers and share knowledge with experienced builders."
     },
-    guestInfo: {
-      title: "Guest Information",
-      firstName: "First Name",
-      lastName: "Last Name",
-      email: "Email",
-      phone: "Phone",
-      address: "Address",
-      city: "City",
-      zipCode: "Zip Code",
-      country: "Country",
-      specialRequests: "Special Requests",
-      specialRequestsPlaceholder: "Any special requests or notes for your stay"
-    },
-    payment: {
-      title: "Payment Information",
-      creditCard: "Credit Card",
-      payAtProperty: "Pay at Property",
-      nameOnCard: "Name on Card",
-      cardNumber: "Card Number",
-      cardNumberPlaceholder: "0000 0000 0000 0000",
-      expiryDate: "Expiry Date",
-      expiryDatePlaceholder: "MM/YY",
-      cvc: "CVC",
-      cvcPlaceholder: "123",
-      payAtPropertyInfo: "You will be required to provide a valid credit card upon arrival for security purposes, but payment will be collected during your stay at the property."
-    },
-    summary: {
-      title: "Booking Summary",
-      checkIn: "Check-in",
-      checkOut: "Check-out",
-      guests: "Guests",
-      night: "night",
-      nights: "nights",
-      cleaningFee: "Cleaning fee",
-      serviceFee: "Service fee",
-      total: "Total"
-    },
-    confirmation: {
-      title: "Review Booking Details",
-      accommodationDetails: "Accommodation Details",
-      guestDetails: "Guest Details",
-      name: "Name",
-      email: "Email",
-      phone: "Phone",
-      address: "Address", 
-      city: "City",
-      country: "Country",
-      specialRequests: "Special Requests",
-      paymentMethod: "Payment Method",
-      creditCard: "Credit Card",
-      priceSummary: "Price Summary",
-      termsAgree: "I agree to the",
-      termsLink: "Terms and Conditions",
-      privacyLink: "Privacy Policy",
-      cancellationInfo: "I understand that my booking is subject to the property's cancellation policy.",
-      back: "Back",
-      confirmBooking: "Confirm Booking",
-      success: "Booking Confirmed!",
-      emailSent: "Your reservation has been successfully confirmed. A confirmation email has been sent to",
-      bookingReference: "Booking Reference",
-      returnToHome: "Return to Homepage"
+    events: {
+      title: "Local Events & Workshops",
+      description: "Join hands-on workshops and meet local makers."
     }
   },
   contact: {
     title: "Contact Us",
-    subtitle: "We're here to help make your stay unforgettable. Reach out with any questions or special requests.",
+    subtitle: "Get in touch with our team of hardware experts and project specialists.",
     getInTouch: "Get In Touch",
     address: "Address",
-    phone: "Phone",
+    phone: "Phone", 
     email: "Email",
-    receptionHours: "Reception Hours",
-    checkInTime: "Check-in: After 3:00 PM",
-    checkOutTime: "Check-out: Before 11:00 AM",
+    storeHours: "Store Hours",
+    mondayFriday: "Mon-Fri: 6:00 AM - 9:00 PM",
+    weekend: "Sat-Sun: 7:00 AM - 8:00 PM", 
     sendMessage: "Send Us a Message",
     fullName: "Full Name",
     phoneNumber: "Phone Number",
     subject: "Subject",
     message: "Message",
-    howCanWeHelp: "How can we help you?",
+    howCanWeHelp: "How can we help with your project?",
     send: "Send Message",
     messageSent: "Message Sent!",
-    thankYou: "Thank you for reaching out. We'll respond to your message as soon as possible.",
+    thankYou: "Thank you for reaching out. Our team will respond within 24 hours.",
     faq: "Frequently Asked Questions",
-    faqSubtitle: "Find quick answers to commonly asked questions about our accommodations and services.",
+    faqSubtitle: "Find quick answers to common questions about our products and services.",
     questions: {
-      checkInOut: {
-        question: "What are your check-in and check-out times?",
-        answer: "Check-in is from 3:00 PM onwards, and check-out is until 11:00 AM. Early check-in or late check-out may be arranged based on availability."
+      delivery: {
+        question: "What are your delivery options?",
+        answer: "We offer same-day delivery, next-day delivery, jobsite direct delivery, and convenient store pickup. Delivery options vary by location and product size."
       },
-      parking: {
-        question: "Is parking available at the property?",
-        answer: "Yes, we offer complimentary parking for all guests. Valet parking service is also available for an additional fee."
+      returns: {
+        question: "What is your return policy?", 
+        answer: "We accept returns within 90 days of purchase with original receipt. Tools must be in original condition. Some restrictions apply to custom orders and cut materials."
       },
-      pets: {
-        question: "Are pets allowed in the apartments?",
-        answer: "We welcome pets in designated pet-friendly apartments. Please inform us in advance if you plan to bring a pet, as additional charges may apply."
+      professional: {
+        question: "Do you offer contractor discounts?",
+        answer: "Yes! We offer volume discounts, net payment terms, and exclusive pricing for verified trade professionals. Sign up for a Pro Account to access special rates."
       },
-      breakfast: {
-        question: "Is breakfast included in the room rate?",
-        answer: "Breakfast is included in select room packages. You can check the inclusion during the booking process or add it to your reservation at any time."
+      installation: {
+        question: "Do you provide installation services?",
+        answer: "We partner with vetted local professionals for installation services. You can request quotes through our Professional Services network."
       },
-      transfers: {
-        question: "Do you offer airport transfers?",
-        answer: "Yes, we offer airport transfers for an additional fee. Please contact our concierge at least 48 hours before your arrival to arrange transportation."
+      advice: {
+        question: "Can I get project advice and recommendations?",
+        answer: "Absolutely! Our hardware experts are available in-store and online to help with project planning, tool selection, and troubleshooting."
       },
-      amenities: {
-        question: "What amenities are available at the property?",
-        answer: "Our property features swimming pools, a spa, restaurants, a beach bar, fitness center, and direct beach access. All apartments include Wi-Fi, air conditioning, and modern appliances."
-      }
-    }
-  },
-  apartmentDescriptions: {
-    "1": {
-      name: "Deluxe Sea View Suite",
-      description: "Luxurious suite with panoramic sea views, modern amenities, and a private balcony."
-    },
-    "2": {
-      name: "Premium Family Apartment",
-      description: "Spacious apartment ideal for families, with full kitchen and stunning coastal views."
-    },
-    "3": {
-      name: "Executive Beach Studio",
-      description: "Elegant studio with direct beach access, modern design, and premium finishes."
-    },
-    "4": {
-      name: "Luxury Penthouse Suite",
-      description: "Exclusive top-floor suite with expansive terrace and panoramic sea views."
-    },
-    "5": {
-      name: "Classic Double Room",
-      description: "Comfortable hotel room with modern amenities and partial sea views."
-    },
-    "6": {
-      name: "Garden View Apartment",
-      description: "Peaceful apartment surrounded by lush gardens, just a short walk from the beach."
-    }
-  },
-  amenitiesPage: {
-    title: "Our Amenities",
-    subtitle: "Discover the luxury amenities and services that make your stay unforgettable.",
-    description: "At MareSereno, we are dedicated to providing a comprehensive and luxurious stay experience. From our beachfront services to wellness facilities, every detail has been curated to ensure maximum comfort and pleasure.",
-    categories: {
-      wellness: {
-        title: "Wellness & Relaxation",
-        description: "Treat yourself with our range of wellness services designed to rejuvenate body and mind.",
-        items: [
-          {
-            title: "Luxury Spa",
-            description: "Our spa offers a full range of treatments, from traditional therapies to the most modern beauty treatments."
-          },
-          {
-            title: "Fitness Center",
-            description: "Maintain your fitness routine with our state-of-the-art gym featuring panoramic sea views."
-          },
-          {
-            title: "Infinity Pool",
-            description: "Immerse yourself in our infinity pool while admiring the endless horizon of the sea."
-          },
-          {
-            title: "Beach Yoga",
-            description: "Join our morning yoga sessions on the beach for a revitalizing awakening."
-          }
-        ]
-      },
-      dining: {
-        title: "Dining",
-        description: "Discover the best of local and international cuisine at our restaurants and bars.",
-        items: [
-          {
-            title: "Gourmet Restaurant",
-            description: "Savor fine dishes prepared by our chefs with fresh local ingredients."
-          },
-          {
-            title: "Beach Bar",
-            description: "Enjoy refreshing cocktails and light snacks with your feet in the sand."
-          },
-          {
-            title: "Lounge Bar",
-            description: "Relax with a selection of fine wines and spirits in an elegant atmosphere."
-          },
-          {
-            title: "Room Service",
-            description: "Enjoy gourmet meals in the privacy of your apartment, available 24 hours a day."
-          }
-        ]
-      },
-      services: {
-        title: "Extra Services",
-        description: "Take advantage of our additional services for a hassle-free stay.",
-        items: [
-          {
-            title: "24/7 Concierge",
-            description: "Our concierge team is available at any time to assist you with any request."
-          },
-          {
-            title: "Airport Transfers",
-            description: "Travel comfortably to and from the airport with our private transfer service."
-          },
-          {
-            title: "Car Rental",
-            description: "Explore the area with our fleet of premium vehicles available for rent."
-          },
-          {
-            title: "Guided Excursions",
-            description: "Discover local attractions with our personalized expert-guided tours."
-          }
-        ]
-      },
-      entertainment: {
-        title: "Entertainment",
-        description: "Enjoy a variety of recreational activities designed for all tastes.",
-        items: [
-          {
-            title: "Water Sports",
-            description: "Try a wide range of water sports, from paddleboarding to jet skiing."
-          },
-          {
-            title: "Kids Play Area",
-            description: "Little ones can have fun in our safe and supervised play area."
-          },
-          {
-            title: "Themed Evenings",
-            description: "Join our weekly themed evenings with live music and entertainment."
-          },
-          {
-            title: "Library & Game Room",
-            description: "Relax with a good book or enjoy board games in our common room."
-          }
-        ]
+      bulk: {
+        question: "Can I place bulk or special orders?",
+        answer: "Yes, we handle bulk orders and can source specialty items. Contact our commercial sales team for volume pricing and custom orders."
       }
     }
   }
