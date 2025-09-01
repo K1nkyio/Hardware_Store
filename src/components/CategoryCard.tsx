@@ -13,7 +13,7 @@ interface CategoryCardProps {
 
 export default function CategoryCard({ name, description, icon: Icon, image, productCount, href }: CategoryCardProps) {
   return (
-    <Link to={href} className="project-card block">
+    <Link to={href} className="project-card group block">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={image} 

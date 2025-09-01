@@ -28,7 +28,7 @@ const difficultyColors = {
 
 export default function ProjectGuideCard({ project }: ProjectGuideCardProps) {
   return (
-    <div className="project-card">
+    <div className="project-card group">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={project.image} 

@@ -146,7 +146,7 @@
   }
 
   .project-card {
-    @apply bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40 group;
+    @apply bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40;
   }
 
   .category-gradient {
