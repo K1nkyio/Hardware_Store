@@ -126,11 +126,10 @@ export default function Contact() {
                       <Clock className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{t.contact.receptionHours}</h3>
+                      <h3 className="font-semibold mb-1">{t.contact.storeHours}</h3>
                       <p className="text-muted-foreground">
-                        Monday - Sunday: 24 hours<br />
-                        {t.contact.checkInTime}<br />
-                        {t.contact.checkOutTime}
+                        {t.contact.mondayFriday}<br />
+                        {t.contact.weekend}
                       </p>
                     </div>
                   </div>
