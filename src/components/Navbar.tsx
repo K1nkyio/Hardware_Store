@@ -71,13 +71,12 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      <div className={cn("fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
-        <div className={cn("fixed inset-y-0 right-0 w-3/4 max-w-sm bg-card shadow-xl p-6 transition-transform duration-300 ease-in-out", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
-          <div className="flex flex-col h-full justify-between">
-            <div>
-              <div className="flex justify-between mb-8">
-                <Link to="/" className="flex items-center space-x-2">
+        {/* Mobile Menu */}
+        <div className={cn("fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
+          <div className={cn("fixed inset-y-0 right-0 w-4/5 max-w-sm bg-card shadow-xl transition-transform duration-300 ease-in-out", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
+            <div className="flex flex-col h-full">
+              <div className="flex justify-between items-center p-6 border-b">
+                <Link to="/" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
                   <div className="p-1.5 bg-primary rounded-lg">
                     <Wrench className="h-4 w-4 text-primary-foreground" />
                   </div>
@@ -87,22 +86,42 @@ export default function Navbar() {
                   <X className="h-6 w-6" />
                 </Button>
               </div>
-              <ul className="space-y-6">
-                {navLinks.map(link => <li key={link.name}>
-                    <Link to={link.path} className="text-lg font-medium transition-colors hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
+              
+              <div className="flex-1 p-6">
+                <nav className="space-y-1">
+                  {navLinks.map(link => (
+                    <Link 
+                      key={link.name}
+                      to={link.path} 
+                      className="block px-3 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors" 
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       {link.name}
                     </Link>
-                  </li>)}
-              </ul>
+                  ))}
+                </nav>
+                
+                <div className="mt-8 pt-8 border-t space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Language</span>
+                    <LanguageSelector />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Theme</span>
+                    <ThemeToggle />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-6 border-t">
+                <Button asChild className="w-full mb-3">
+                  <Link to="/products" onClick={() => setMobileMenuOpen(false)}>
+                    {t.nav.account}
+                  </Link>
+                </Button>
+              </div>
             </div>
-            
-            <Button asChild className="w-full btn-primary mt-6">
-              <Link to="/products" onClick={() => setMobileMenuOpen(false)}>
-                {t.nav.account}
-              </Link>
-            </Button>
           </div>
         </div>
-      </div>
     </header>;
 }
