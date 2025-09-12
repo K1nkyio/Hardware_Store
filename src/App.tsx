@@ -12,6 +12,7 @@ import Community from "./pages/Community";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { CartProvider } from "./contexts/CartContext";
 
 // Create a react-query client
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
+        <CartProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -34,6 +36,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </CartProvider>
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>

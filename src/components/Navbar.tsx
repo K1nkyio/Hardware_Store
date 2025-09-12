@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ShoppingCart, Wrench } from "lucide-react";
+import { Menu, X, Wrench } from "lucide-react";
+import ShoppingCartComponent from "@/components/ShoppingCart";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSelector from "./LanguageSelector";
@@ -54,12 +55,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-4">
           <LanguageSelector />
           <ThemeToggle />
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
-              0
-            </span>
-          </Button>
+          <ShoppingCartComponent />
           <Button asChild className="btn-primary">
             <Link to="/products">{t.nav.account}</Link>
           </Button>
@@ -68,12 +64,7 @@ export default function Navbar() {
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center space-x-2">
           <ThemeToggle />
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
-              0
-            </span>
-          </Button>
+          <ShoppingCartComponent />
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-full">
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>

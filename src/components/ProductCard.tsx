@@ -2,6 +2,8 @@ import { Star, ShoppingCart, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 export interface ProductProps {
   id: string;
@@ -26,6 +28,18 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { t } = useLanguage();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    if (!product.inStock) return;
+    
+    addToCart(product);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart`,
+    });
+  };
 
   return (
     <div className="tool-card group">
@@ -107,6 +121,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="flex-1" 
             disabled={!product.inStock}
             size="sm"
+            onClick={handleAddToCart}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             {t.products.filters.addToCart}
