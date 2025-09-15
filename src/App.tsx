@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Projects from "./pages/Projects";
 import Professionals from "./pages/Professionals";
-import Community from "./pages/Community";
+import ProjectDetail from "./pages/ProjectDetail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
@@ -29,8 +29,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/products" element={<Products />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/professionals" element={<Professionals />} />
-            <Route path="/community" element={<Community />} />
             <Route path="/contact" element={<Contact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -19,7 +19,6 @@ export default function Navbar() {
     { name: t.nav.products, path: "/products" },
     { name: t.nav.projects, path: "/projects" },
     { name: t.nav.professionals, path: "/professionals" },
-    { name: t.nav.community, path: "/community" },
     { name: t.nav.contact, path: "/contact" }
   ];
 
@@ -72,8 +71,8 @@ export default function Navbar() {
       </nav>
 
         {/* Mobile Menu */}
-        <div className={cn("fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
-          <div className={cn("fixed inset-y-0 right-0 w-4/5 max-w-sm bg-card shadow-xl transition-transform duration-300 ease-in-out", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
+        <div className={cn("fixed inset-0 z-40 bg-background/95 backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
+           <div className={cn("fixed inset-y-0 right-0 w-4/5 max-w-sm bg-card shadow-xl transition-transform duration-300 ease-in-out", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center p-6 border-b">
                 <Link to="/" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>

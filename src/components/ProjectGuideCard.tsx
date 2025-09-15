@@ -28,49 +28,50 @@ const difficultyColors = {
 
 export default function ProjectGuideCard({ project }: ProjectGuideCardProps) {
   return (
-    <div className="project-card group">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={project.image} 
-          alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-        <div className="absolute top-3 left-3">
-          <Badge className={difficultyColors[project.difficulty]}>
-            {project.difficulty}
-          </Badge>
-        </div>
-      </div>
-      
-      <div className="p-6">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-          <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
-            <span>{project.duration}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <User className="h-4 w-4" />
-            <span>{project.steps} steps</span>
+    <Link to={`/projects/${project.id}`} className="block">
+      <div className="project-card group">
+        <div className="relative h-48 overflow-hidden">
+          <img 
+            src={project.image} 
+            alt={project.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute top-3 left-3">
+            <Badge className={difficultyColors[project.difficulty]}>
+              {project.difficulty}
+            </Badge>
           </div>
         </div>
         
-        <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
-          {project.title}
-        </h3>
-        
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-          {project.description}
-        </p>
-        
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-primary">{project.category}</span>
-          <Button asChild variant="ghost" size="sm" className="group-hover:text-primary">
-            <Link to={`/projects/${project.id}`}>
-              Start Project <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
+        <div className="p-6">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span>{project.duration}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <User className="h-4 w-4" />
+              <span>{project.steps} steps</span>
+            </div>
+          </div>
+          
+          <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+            {project.title}
+          </h3>
+          
+          <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+            {project.description}
+          </p>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-primary">{project.category}</span>
+            <div className="flex items-center text-primary group-hover:text-primary/80 transition-colors">
+              <span className="text-sm font-medium mr-1">Start Project</span>
+              <ArrowRight className="h-4 w-4" />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
