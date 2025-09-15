@@ -281,10 +281,10 @@ export default function Contact() {
               ].map((faq, index) => (
                 <div key={index} className="glass-card p-6">
                   <h3 className="font-semibold text-lg mb-2">
-                    {t.contact.questions[faq.questionKey].question}
+                    {t.contact.questions?.[faq.questionKey]?.question}
                   </h3>
                   <p className="text-muted-foreground">
-                    {t.contact.questions[faq.questionKey].answer}
+                    {t.contact.questions?.[faq.questionKey]?.answer}
                   </p>
                 </div>
               ))}
