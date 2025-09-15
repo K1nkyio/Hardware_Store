@@ -255,27 +255,27 @@ export default function Contact() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in [animation-delay:200ms]">
               {[
                 {
-                  questionKey: "checkInOut",
+                  questionKey: "delivery",
                   icon: <Clock className="h-5 w-5 text-primary" />
                 },
                 {
-                  questionKey: "parking",
+                  questionKey: "returns",
                   icon: <MapPin className="h-5 w-5 text-primary" />
                 },
                 {
-                  questionKey: "pets",
-                  icon: <MapPin className="h-5 w-5 text-primary" />
+                  questionKey: "professional",
+                  icon: <Phone className="h-5 w-5 text-primary" />
                 },
                 {
-                  questionKey: "breakfast",
-                  icon: <MapPin className="h-5 w-5 text-primary" />
+                  questionKey: "installation",
+                  icon: <Mail className="h-5 w-5 text-primary" />
                 },
                 {
-                  questionKey: "transfers",
-                  icon: <MapPin className="h-5 w-5 text-primary" />
+                  questionKey: "advice",
+                  icon: <Clock className="h-5 w-5 text-primary" />
                 },
                 {
-                  questionKey: "amenities",
+                  questionKey: "bulk",
                   icon: <MapPin className="h-5 w-5 text-primary" />
                 },
               ].map((faq, index) => (
