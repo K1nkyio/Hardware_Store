@@ -10,6 +10,7 @@ import Projects from "./pages/Projects";
 import Professionals from "./pages/Professionals";
 import ProjectDetail from "./pages/ProjectDetail";
 import Contact from "./pages/Contact";
+import ProductDetail from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -28,6 +29,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/professionals" element={<Professionals />} />

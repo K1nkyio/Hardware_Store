@@ -1,6 +1,7 @@
 import { Star, ShoppingCart, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -126,8 +127,10 @@ export default function ProductCard({ product }: ProductCardProps) {
             <ShoppingCart className="h-4 w-4 mr-2" />
             {t.products.filters.addToCart}
           </Button>
-          <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4" />
+          <Button variant="outline" size="sm" asChild>
+            <Link to={`/products/${product.id}`}>
+              <Eye className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>

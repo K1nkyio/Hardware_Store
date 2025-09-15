@@ -51,27 +51,29 @@ export default function Navbar() {
             </li>)}
         </ul>
 
-        <div className="hidden md:flex items-center space-x-4">
-          <LanguageSelector />
-          <ThemeToggle />
+        <div className="hidden md:flex items-center space-x-2">
+          <div className="flex items-center space-x-1 mr-2">
+            <LanguageSelector />
+            <ThemeToggle />
+          </div>
           <ShoppingCartComponent />
-          <Button asChild className="btn-primary">
+          <Button asChild className="btn-primary" size="sm">
             <Link to="/products">{t.nav.account}</Link>
           </Button>
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center space-x-2">
+        <div className="md:hidden flex items-center space-x-1">
           <ThemeToggle />
           <ShoppingCartComponent />
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-full">
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </nav>
 
         {/* Mobile Menu */}
-        <div className={cn("fixed inset-0 z-40 bg-background/95 backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
+        <div className={cn("fixed inset-0 z-40 bg-background backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
            <div className={cn("fixed inset-y-0 right-0 w-4/5 max-w-sm bg-card shadow-xl transition-transform duration-300 ease-in-out", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center p-6 border-b">
@@ -100,13 +102,13 @@ export default function Navbar() {
                   ))}
                 </nav>
                 
-                <div className="mt-8 pt-8 border-t space-y-4">
+                <div className="mt-6 pt-6 border-t space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Language</span>
+                    <span className="text-xs font-medium">Language</span>
                     <LanguageSelector />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Theme</span>
+                    <span className="text-xs font-medium">Theme</span>
                     <ThemeToggle />
                   </div>
                 </div>
