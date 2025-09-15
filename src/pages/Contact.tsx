@@ -278,13 +278,13 @@ export default function Contact() {
                   questionKey: "bulk",
                   icon: <MapPin className="h-5 w-5 text-primary" />
                 },
-              ].map((faq, index) => (
+              ].filter(faq => t.contact?.questions?.[faq.questionKey]).map((faq, index) => (
                 <div key={index} className="glass-card p-6">
                   <h3 className="font-semibold text-lg mb-2">
-                    {t.contact.questions?.[faq.questionKey]?.question}
+                    {t.contact?.questions?.[faq.questionKey]?.question || "Question not available"}
                   </h3>
                   <p className="text-muted-foreground">
-                    {t.contact.questions?.[faq.questionKey]?.answer}
+                    {t.contact?.questions?.[faq.questionKey]?.answer || "Answer not available"}
                   </p>
                 </div>
               ))}
