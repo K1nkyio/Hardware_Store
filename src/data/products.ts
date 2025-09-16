@@ -245,5 +245,189 @@ export const products: ProductProps[] = [
     isNew: false,
     isBestSeller: false,
     discount: 29
+  },
+
+  // Additional Power Tools
+  {
+    id: '17',
+    name: 'Bosch 18V Impact Driver',
+    description: 'Compact cordless impact driver with variable speed trigger and LED light for precision work.',
+    price: 89.99,
+    originalPrice: 119.99,
+    rating: 4.7,
+    reviewCount: 892,
+    image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
+    category: 'Power Tools',
+    brand: 'Bosch',
+    inStock: true,
+    isNew: true,
+    isBestSeller: false,
+    discount: 25
+  },
+  {
+    id: '18',
+    name: 'Ryobi One+ Jigsaw 18V',
+    description: 'Cordless jigsaw with tool-free blade changes and adjustable orbital settings.',
+    price: 79.99,
+    rating: 4.5,
+    reviewCount: 456,
+    image: 'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400',
+    category: 'Power Tools',
+    brand: 'Ryobi',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+  {
+    id: '19',
+    name: 'Black+Decker Orbital Sander',
+    description: 'Compact orbital sander with dust collection and quick-change sanding sheets.',
+    price: 34.99,
+    rating: 4.3,
+    reviewCount: 678,
+    image: 'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=400',
+    category: 'Power Tools',
+    brand: 'Black+Decker',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+
+  // Additional Hand Tools
+  {
+    id: '20',
+    name: 'Irwin Combination Square 12"',
+    description: 'Professional combination square with stainless steel blade and cast iron head.',
+    price: 32.99,
+    rating: 4.6,
+    reviewCount: 234,
+    image: 'https://images.unsplash.com/photo-1609205807107-e1ec4458ffe0?w=400',
+    category: 'Hand Tools',
+    brand: 'Irwin',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+  {
+    id: '21',
+    name: 'Husky 16oz Claw Hammer',
+    description: 'Fiberglass handle claw hammer with anti-vibration technology and magnetic nail starter.',
+    price: 19.99,
+    rating: 4.4,
+    reviewCount: 567,
+    image: 'https://images.unsplash.com/photo-1567127022-b5fb52ba6336?w=400',
+    category: 'Hand Tools',
+    brand: 'Husky',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '22',
+    name: 'Channellock Adjustable Wrench Set',
+    description: 'Set of 3 adjustable wrenches (6", 8", 10") with laser-etched scale markings.',
+    price: 29.99,
+    rating: 4.7,
+    reviewCount: 345,
+    image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400',
+    category: 'Hand Tools',
+    brand: 'Channellock',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+
+  // Garden & Outdoor
+  {
+    id: '23',
+    name: 'Fiskars Bypass Pruning Shears',
+    description: 'Sharp precision-ground steel blade with non-stick coating for clean cuts.',
+    price: 24.99,
+    rating: 4.8,
+    reviewCount: 789,
+    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400',
+    category: 'Garden Tools',
+    brand: 'Fiskars',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '24',
+    name: 'Corona Extendable Pole Saw',
+    description: 'Telescoping pole saw extends from 7 to 10 feet for high branch cutting.',
+    price: 89.99,
+    originalPrice: 109.99,
+    rating: 4.5,
+    reviewCount: 234,
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    category: 'Garden Tools',
+    brand: 'Corona',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false,
+    discount: 18
+  },
+
+  // Safety Equipment
+  {
+    id: '25',
+    name: '3M N95 Respirator Masks (20-Pack)',
+    description: 'NIOSH-approved N95 respirator masks for dust and particle protection.',
+    price: 39.99,
+    rating: 4.6,
+    reviewCount: 1245,
+    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400',
+    category: 'Safety',
+    brand: '3M',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '26',
+    name: 'DeWalt Safety Glasses Set',
+    description: 'Impact-resistant safety glasses with anti-fog coating and UV protection.',
+    price: 16.99,
+    rating: 4.4,
+    reviewCount: 567,
+    image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400',
+    category: 'Safety',
+    brand: 'DeWalt',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+
+  // Storage & Organization
+  {
+    id: '27',
+    name: 'Craftsman 26" Tool Chest',
+    description: 'Heavy-duty steel tool chest with 6 drawers and ball-bearing slides.',
+    price: 199.99,
+    originalPrice: 249.99,
+    rating: 4.7,
+    reviewCount: 345,
+    image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400',
+    category: 'Storage',
+    brand: 'Craftsman',
+    inStock: true,
+    isNew: true,
+    isBestSeller: false,
+    discount: 20
+  },
+  {
+    id: '28',
+    name: 'Stanley FatMax Tool Bag',
+    description: 'Durable tool bag with multiple pockets and reinforced bottom for heavy tools.',
+    price: 44.99,
+    rating: 4.5,
+    reviewCount: 234,
+    image: 'https://images.unsplash.com/photo-1609205807107-e1ec4458ffe0?w=400',
+    category: 'Storage',
+    brand: 'Stanley',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
   }
 ];

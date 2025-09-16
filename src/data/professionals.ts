@@ -13,6 +13,8 @@ export interface Professional {
   description: string;
   services: string[];
   availability: string;
+  phone: string;
+  email: string;
 }
 
 export const professionals: Professional[] = [
@@ -27,10 +29,12 @@ export const professionals: Professional[] = [
     yearsExperience: 15,
     verified: true,
     hourlyRate: "$85-120",
-    image: "/api/placeholder/150/150",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
     description: "Licensed general contractor specializing in residential renovations. Known for quality craftsmanship and on-time project completion.",
     services: ["Full home renovations", "Kitchen remodeling", "Bathroom updates", "Room additions", "Deck construction"],
-    availability: "Available for new projects"
+    availability: "Available for new projects",
+    phone: "(555) 123-4567",
+    email: "john.mitchell@email.com"
   },
   {
     id: "sarah-electrician",
@@ -43,10 +47,12 @@ export const professionals: Professional[] = [
     yearsExperience: 12,
     verified: true,
     hourlyRate: "$95-140",
-    image: "/api/placeholder/150/150",
+    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face",
     description: "Certified master electrician with expertise in modern electrical systems and smart home integration.",
     services: ["Electrical panel upgrades", "Smart home wiring", "Outlet installation", "Lighting design", "EV charger installation"],
-    availability: "Booking 2-3 weeks out"
+    availability: "Booking 2-3 weeks out",
+    phone: "(555) 234-5678",
+    email: "sarah.chen@email.com"
   },
   {
     id: "mike-plumber",
@@ -59,10 +65,12 @@ export const professionals: Professional[] = [
     yearsExperience: 18,
     verified: true,
     hourlyRate: "$75-110",
-    image: "/api/placeholder/150/150",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
     description: "Experienced plumber providing reliable residential and commercial plumbing services with 24/7 emergency availability.",
     services: ["Pipe repair and replacement", "Water heater installation", "Drain cleaning", "Fixture installation", "Sewer line repair"],
-    availability: "Same-day emergency service"
+    availability: "Same-day emergency service",
+    phone: "(555) 345-6789",
+    email: "mike.rodriguez@email.com"
   },
   {
     id: "lisa-hvac",
@@ -75,10 +83,12 @@ export const professionals: Professional[] = [
     yearsExperience: 14,
     verified: true,
     hourlyRate: "$90-130",
-    image: "/api/placeholder/150/150",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
     description: "HVAC specialist focused on energy-efficient heating and cooling solutions with excellent customer service.",
     services: ["AC installation and repair", "Heating system maintenance", "Duct cleaning and sealing", "Smart thermostat setup", "Energy audits"],
-    availability: "Available next week"
+    availability: "Available next week",
+    phone: "(555) 456-7890",
+    email: "lisa.thompson@email.com"
   },
   {
     id: "david-roofing",
@@ -91,10 +101,12 @@ export const professionals: Professional[] = [
     yearsExperience: 11,
     verified: true,
     hourlyRate: "$70-100",
-    image: "/api/placeholder/150/150",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
     description: "Professional roofing contractor with expertise in residential roofing systems and storm damage repair.",
     services: ["Roof replacement", "Shingle repair", "Gutter installation", "Roof inspections", "Skylight installation"],
-    availability: "Booking 1-2 weeks out"
+    availability: "Booking 1-2 weeks out",
+    phone: "(555) 567-8901",
+    email: "david.park@email.com"
   },
   {
     id: "maria-flooring",
@@ -107,9 +119,11 @@ export const professionals: Professional[] = [
     yearsExperience: 16,
     verified: true,
     hourlyRate: "$60-95",
-    image: "/api/placeholder/150/150",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=face",
     description: "Expert flooring installer with extensive experience in all types of residential and commercial flooring solutions.",
     services: ["Hardwood installation", "Tile and stone work", "Laminate flooring", "Carpet installation", "Floor refinishing"],
-    availability: "Available for new projects"
+    availability: "Available for new projects",
+    phone: "(555) 678-9012",
+    email: "maria.santos@email.com"
   }
 ];

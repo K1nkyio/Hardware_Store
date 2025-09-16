@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -153,8 +154,10 @@ export default function Professionals() {
                       <Phone className="w-4 h-4 mr-2" />
                       {t.professionals.getQuote}
                     </Button>
-                    <Button size="sm" className="flex-1">
-                      {t.professionals.viewProfile}
+                    <Button asChild size="sm" className="flex-1">
+                      <Link to={`/professionals/${pro.id}`}>
+                        {t.professionals.viewProfile}
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>

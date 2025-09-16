@@ -16,26 +16,26 @@ export default function HeroSection() {
             {t.hero.subtitle}
           </div>
           
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in [animation-delay:100ms]">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 animate-fade-in [animation-delay:100ms]">
             <span className="text-gradient">Build Your Dreams</span>
             <br />
             <span className="text-foreground">with Confidence</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in [animation-delay:200ms]">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in [animation-delay:200ms]">
             {t.hero.description}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in [animation-delay:300ms]">
-            <Button asChild size="lg" className="btn-primary text-lg px-8 py-6">
+            <Button asChild size="default" className="btn-primary text-base px-6 py-4">
               <Link to="/products">
-                {t.hero.shopNow} <ArrowRight className="ml-2 h-5 w-5" />
+                {t.hero.shopNow} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 bg-background/50 backdrop-blur-sm">
+            <Button asChild variant="outline" size="default" className="text-base px-6 py-4 bg-background/50 backdrop-blur-sm">
               <Link to="/projects">
-                <BookOpen className="mr-2 h-5 w-5" />
+                <BookOpen className="mr-2 h-4 w-4" />
                 {t.hero.findProject}
               </Link>
             </Button>
