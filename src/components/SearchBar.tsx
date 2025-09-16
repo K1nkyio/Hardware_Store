@@ -3,10 +3,34 @@ import { Search, Filter, Wrench, Hammer, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchBar() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+    } else {
+      navigate('/products');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleFilterClick = () => {
+    navigate('/products');
+  };
+
+  const handleQuickFilter = (category: string) => {
+    navigate(`/products?category=${encodeURIComponent(category)}`);
+  };
 
   const quickFilters = [
     { name: "Power Tools", icon: Zap, color: "text-tool-blue" },
@@ -24,13 +48,14 @@ export default function SearchBar() {
           placeholder={t.search.placeholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={handleKeyPress}
           className="pl-12 pr-20 py-6 text-lg bg-card border-2 border-border hover:border-primary/50 focus:border-primary rounded-xl"
         />
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-2">
-          <Button size="icon" variant="ghost" className="h-10 w-10">
+          <Button size="icon" variant="ghost" className="h-10 w-10" onClick={handleFilterClick}>
             <Filter className="h-4 w-4" />
           </Button>
-          <Button className="px-6 h-10 btn-primary">
+          <Button className="px-6 h-10 btn-primary" onClick={handleSearch}>
             Search
           </Button>
         </div>
@@ -38,7 +63,12 @@ export default function SearchBar() {
 
       {/* Quick Filters */}
       <div className="flex flex-wrap gap-3 mt-4 justify-center">
-        <Button variant="outline" size="sm" className="border-primary/20 hover:bg-primary/5">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="border-primary/20 hover:bg-primary/5"
+          onClick={() => handleQuickFilter('Emergency Repair')}
+        >
           <Wrench className="h-4 w-4 mr-2 text-primary" />
           {t.search.emergencyRepair}
         </Button>
@@ -49,6 +79,7 @@ export default function SearchBar() {
             variant="outline" 
             size="sm"
             className="border-border hover:bg-accent"
+            onClick={() => handleQuickFilter(filter.name)}
           >
             <filter.icon className={`h-4 w-4 mr-2 ${filter.color}`} />
             {filter.name}
@@ -63,7 +94,10 @@ export default function SearchBar() {
           <button 
             key={index}
             className="text-sm text-primary hover:underline mr-4 last:mr-0"
-            onClick={() => setSearchTerm(term)}
+            onClick={() => {
+              setSearchTerm(term);
+              navigate(`/products?search=${encodeURIComponent(term)}`);
+            }}
           >
             {term}
           </button>

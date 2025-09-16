@@ -57,8 +57,15 @@ export default function Navbar() {
             <ThemeToggle />
           </div>
           <ShoppingCartComponent />
-          <Button asChild className="btn-primary" size="sm">
-            <Link to="/products">{t.nav.account}</Link>
+          <Button 
+            className="btn-primary" 
+            size="sm"
+            onClick={() => {
+              const cartTrigger = document.querySelector('[data-cart-trigger]') as HTMLButtonElement;
+              if (cartTrigger) cartTrigger.click();
+            }}
+          >
+            {t.nav.account}
           </Button>
         </div>
 
@@ -115,10 +122,17 @@ export default function Navbar() {
               </div>
               
               <div className="p-6 border-t">
-                <Button asChild className="w-full mb-3">
-                  <Link to="/products" onClick={() => setMobileMenuOpen(false)}>
-                    {t.nav.account}
-                  </Link>
+                <Button 
+                  className="w-full mb-3"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setTimeout(() => {
+                      const cartTrigger = document.querySelector('[data-cart-trigger]') as HTMLButtonElement;
+                      if (cartTrigger) cartTrigger.click();
+                    }, 100);
+                  }}
+                >
+                  {t.nav.account}
                 </Button>
               </div>
             </div>

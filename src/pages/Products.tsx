@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
@@ -8,6 +9,7 @@ import { products } from "@/data/products";
 
 export default function Products() {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
     priceRange: [0, 500],
@@ -16,9 +18,26 @@ export default function Products() {
     inStockOnly: false
   });
 
+  // Get search term and category from URL params
+  const searchTerm = searchParams.get('search') || '';
+  const categoryParam = searchParams.get('category') || '';
+
   const filteredProducts = products.filter(product => {
-    // Category filter
-    if (filters.category !== 'all' && product.category !== filters.category) {
+    // Search term filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = 
+        product.name.toLowerCase().includes(searchLower) ||
+        product.brand.toLowerCase().includes(searchLower) ||
+        product.category.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower);
+      
+      if (!matchesSearch) return false;
+    }
+
+    // URL Category filter (takes precedence over filter state)
+    const activeCategory = categoryParam || filters.category;
+    if (activeCategory !== 'all' && product.category !== activeCategory) {
       return false;
     }
 
@@ -47,7 +66,12 @@ export default function Products() {
   
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    
+    // Update filters based on URL params
+    if (categoryParam && categoryParam !== filters.category) {
+      setFilters(prev => ({ ...prev, category: categoryParam }));
+    }
+  }, [categoryParam]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -58,10 +82,10 @@ export default function Products() {
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                {t.products.title}
+                {searchTerm ? `Search Results for "${searchTerm}"` : categoryParam ? `${categoryParam} Products` : t.products.title}
               </h1>
               <p className="text-xl text-muted-foreground">
-                {t.products.subtitle}
+                {searchTerm || categoryParam ? `Found ${filteredProducts.length} results` : t.products.subtitle}
               </p>
             </div>
             

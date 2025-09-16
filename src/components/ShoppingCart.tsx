@@ -47,7 +47,7 @@ export default function ShoppingCartComponent() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative" data-cart-trigger>
           <ShoppingCart className="h-5 w-5" />
           {state.itemCount > 0 && (
             <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
@@ -178,17 +178,19 @@ export default function ShoppingCartComponent() {
                   </p>
                 )}
 
-                <Button className="w-full" size="lg">
-                  Proceed to Checkout
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
-                  onClick={() => setIsOpen(false)}
-                >
-                  Continue Shopping
-                </Button>
+                <div className="flex flex-col gap-3">
+                  <Button className="w-full" size="lg">
+                    Proceed to Checkout
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Continue Shopping
+                  </Button>
+                </div>
               </div>
             </>
           )}
