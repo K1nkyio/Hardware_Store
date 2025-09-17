@@ -145,7 +145,7 @@ export default function ShoppingCartComponent() {
               </div>
 
               {/* Cart Summary */}
-              <div className="border-t pt-6 space-y-4">
+              <div className="border-t pt-4 space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
@@ -178,7 +178,7 @@ export default function ShoppingCartComponent() {
                   </p>
                 )}
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3 mt-2">
                   <Button className="w-full" size="lg">
                     Proceed to Checkout
                   </Button>
