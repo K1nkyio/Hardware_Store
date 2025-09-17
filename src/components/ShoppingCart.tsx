@@ -178,7 +178,7 @@ export default function ShoppingCartComponent() {
                   </p>
                 )}
 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   <Button className="w-full" size="lg">
                     Proceed to Checkout
                   </Button>
@@ -186,6 +186,7 @@ export default function ShoppingCartComponent() {
                   <Button 
                     variant="outline" 
                     className="w-full" 
+                    size="lg"
                     onClick={() => setIsOpen(false)}
                   >
                     Continue Shopping

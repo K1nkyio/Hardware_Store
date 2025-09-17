@@ -173,7 +173,7 @@ export const en = {
       roofing: "Roofing Contractors",
       flooring: "Flooring Experts"
     },
-    getQuote: "Get Quote",
+    getQuote: "Call Now",
     viewProfile: "View Profile",
     verified: "Verified Professional"
   },

@@ -8,6 +8,12 @@ import bathroomVanityImage from "@/assets/bathroom-vanity.jpg";
 import gardenBedImage from "@/assets/raised-garden-bed.jpg";
 import backsplashImage from "@/assets/kitchen-backsplash.jpg";
 import closetOrganizerImage from "@/assets/closet-organizer.jpg";
+import modernShelfImage from "@/assets/floating-shelf-modern.jpg";
+import smartSwitchImage from "@/assets/smart-light-switches.jpg";
+import planterBoxImage from "@/assets/garden-planter-box.jpg";
+import mudroomBenchImage from "@/assets/mudroom-bench.jpg";
+import tileFloorImage from "@/assets/tile-floor-installation.jpg";
+import accentWallImage from "@/assets/wood-accent-wall.jpg";
 
 export interface ProjectGuide {
   id: string;
@@ -164,5 +170,89 @@ export const projectGuides: ProjectGuide[] = [
     steps: 9,
     rating: 4.6,
     completions: 750
+  },
+  {
+    id: "modern-floating-shelf",
+    title: "Build a Modern Floating Shelf",
+    description: "Create sleek, minimalist floating shelves that appear to hover on your wall. Perfect for modern home aesthetics with hidden bracket systems.",
+    image: modernShelfImage,
+    difficulty: "Beginner",
+    duration: "3-4 hours",
+    category: "Storage",
+    materials: ["Hardwood board", "Hidden floating brackets", "Wood finish", "Wall anchors"],
+    tools: ["Router", "Drill", "Level", "Stud finder"],
+    steps: 6,
+    rating: 4.7,
+    completions: 1400
+  },
+  {
+    id: "smart-light-switches",
+    title: "Install Smart Light Switches",
+    description: "Upgrade your home with smart lighting control. Learn proper electrical connections, wire management, and smart home integration.",
+    image: smartSwitchImage,
+    difficulty: "Intermediate",
+    duration: "2-3 hours",
+    category: "Electrical",
+    materials: ["Smart switches", "Wire nuts", "Electrical tape", "Cable labels"],
+    tools: ["Wire strippers", "Voltage tester", "Screwdriver set", "Needle-nose pliers"],
+    steps: 8,
+    rating: 4.5,
+    completions: 680
+  },
+  {
+    id: "garden-planter-box",
+    title: "Build a Garden Planter Box",
+    description: "Construct a large, durable planter box for vegetables or flowers. Features proper drainage, soil depth, and weather-resistant construction.",
+    image: planterBoxImage,
+    difficulty: "Beginner",
+    duration: "4-5 hours",
+    category: "Garden",
+    materials: ["Cedar planks", "Galvanized screws", "Landscape fabric", "Drainage gravel"],
+    tools: ["Miter saw", "Drill", "Square", "Measuring tape"],
+    steps: 10,
+    rating: 4.8,
+    completions: 2200
+  },
+  {
+    id: "mudroom-bench",
+    title: "Built-in Mudroom Bench",
+    description: "Create functional entryway storage with a custom mudroom bench featuring cubby holes, hooks, and hidden storage compartments.",
+    image: mudroomBenchImage,
+    difficulty: "Advanced",
+    duration: "2-3 days",
+    category: "Storage",
+    materials: ["Plywood", "Hardwood trim", "Piano hinge", "Coat hooks", "Cushion foam"],
+    tools: ["Table saw", "Router", "Pocket hole jig", "Nail gun"],
+    steps: 16,
+    rating: 4.9,
+    completions: 420
+  },
+  {
+    id: "tile-floor-installation",
+    title: "Install Ceramic Tile Flooring",
+    description: "Master the art of tile installation with proper substrate preparation, layout planning, cutting techniques, and professional finishing.",
+    image: tileFloorImage,
+    difficulty: "Advanced",
+    duration: "3-4 days",
+    category: "Flooring",
+    materials: ["Ceramic tiles", "Tile adhesive", "Grout", "Tile spacers", "Underlayment"],
+    tools: ["Tile saw", "Trowel", "Grout float", "Tile nippers", "Level"],
+    steps: 14,
+    rating: 4.4,
+    completions: 380
+  },
+  {
+    id: "wood-accent-wall",
+    title: "Create a Wood Accent Wall",
+    description: "Transform any room with a stunning wood accent wall. Learn board selection, spacing techniques, and finishing for a professional look.",
+    image: accentWallImage,
+    difficulty: "Intermediate",
+    duration: "1-2 days",
+    category: "Interior",
+    materials: ["Wood planks", "Wood stain", "Construction adhesive", "Finish nails"],
+    tools: ["Miter saw", "Nail gun", "Level", "Stud finder"],
+    steps: 11,
+    rating: 4.6,
+    completions: 950
   }
 ];

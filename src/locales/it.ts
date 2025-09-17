@@ -187,7 +187,7 @@ export const it = {
       roofing: "Tetti",
       flooring: "Pavimentazioni",
     },
-    getQuote: "Richiedi preventivo",
+    getQuote: "Chiama ora",
     viewProfile: "Vedi profilo",
     verified: "Professionista verificato",
   },
