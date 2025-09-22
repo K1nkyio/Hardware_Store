@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSelector from "./LanguageSelector";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navbar() {
@@ -73,70 +74,70 @@ export default function Navbar() {
         <div className="md:hidden flex items-center space-x-1">
           <ThemeToggle />
           <ShoppingCartComponent />
-          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-full">
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
-      </nav>
-
-        {/* Mobile Menu */}
-        <div className={cn("fixed inset-0 z-40 bg-background backdrop-blur-sm md:hidden transition-opacity duration-300", mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
-           <div className={cn("fixed inset-y-0 right-0 w-4/5 max-w-sm bg-card shadow-xl transition-transform duration-300 ease-in-out", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
-            <div className="flex flex-col h-full">
-              <div className="flex justify-between items-center p-6 border-b">
-                <Link to="/" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
-                  <div className="p-1.5 bg-primary rounded-lg">
-                    <Wrench className="h-4 w-4 text-primary-foreground" />
-                  </div>
-                  <span className="font-bold text-gradient text-sm">BuildMaster Pro</span>
-                </Link>
-                <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="rounded-full">
-                  <X className="h-6 w-6" />
-                </Button>
-              </div>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            
+            <SheetContent side="right" className="w-4/5 max-w-sm">
+              <SheetHeader>
+                <SheetTitle className="text-left">
+                  <Link to="/" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
+                    <div className="p-1.5 bg-primary rounded-lg">
+                      <Wrench className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                    <span className="font-bold text-gradient text-sm">BuildMaster Pro</span>
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
               
-              <div className="flex-1 p-6">
-                <nav className="space-y-1">
-                  {navLinks.map(link => (
-                    <Link 
-                      key={link.name}
-                      to={link.path} 
-                      className="block px-3 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors" 
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
-                </nav>
-                
-                <div className="mt-6 pt-6 border-t space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium">Language</span>
-                    <LanguageSelector />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium">Theme</span>
-                    <ThemeToggle />
+              <div className="flex flex-col h-full pt-6">
+                <div className="flex-1">
+                  <nav className="space-y-1">
+                    {navLinks.map(link => (
+                      <Link 
+                        key={link.name}
+                        to={link.path} 
+                        className="block px-3 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors" 
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </nav>
+                  
+                  <div className="mt-6 pt-6 border-t space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium">Language</span>
+                      <LanguageSelector />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium">Theme</span>
+                      <ThemeToggle />
+                    </div>
                   </div>
                 </div>
+                
+                <div className="pb-6 border-t pt-4">
+                  <Button 
+                    className="w-full"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setTimeout(() => {
+                        const cartTrigger = document.querySelector('[data-cart-trigger]') as HTMLButtonElement;
+                        if (cartTrigger) cartTrigger.click();
+                      }, 100);
+                    }}
+                  >
+                    {t.nav.account}
+                  </Button>
+                </div>
               </div>
-              
-              <div className="p-6 border-t">
-                <Button 
-                  className="w-full mb-3"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setTimeout(() => {
-                      const cartTrigger = document.querySelector('[data-cart-trigger]') as HTMLButtonElement;
-                      if (cartTrigger) cartTrigger.click();
-                    }, 100);
-                  }}
-                >
-                  {t.nav.account}
-                </Button>
-              </div>
-            </div>
-          </div>
+            </SheetContent>
+          </Sheet>
         </div>
+      </nav>
     </header>;
 }
