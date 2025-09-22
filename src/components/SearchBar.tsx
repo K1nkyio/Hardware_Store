@@ -42,35 +42,36 @@ export default function SearchBar() {
     <div className="relative max-w-4xl mx-auto">
       {/* Main Search Bar */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 md:h-5 w-4 md:w-5 text-muted-foreground" />
         <Input
           type="text"
           placeholder={t.search.placeholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="pl-12 pr-20 py-6 text-lg bg-card border-2 border-border hover:border-primary/50 focus:border-primary rounded-xl"
+          className="pl-10 md:pl-12 pr-16 md:pr-20 py-3 md:py-6 text-sm md:text-lg bg-card border-2 border-border hover:border-primary/50 focus:border-primary rounded-lg md:rounded-xl"
         />
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-2">
-          <Button size="icon" variant="ghost" className="h-10 w-10" onClick={handleFilterClick}>
-            <Filter className="h-4 w-4" />
+        <div className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2 flex gap-1 md:gap-2">
+          <Button size="icon" variant="ghost" className="h-8 md:h-10 w-8 md:w-10" onClick={handleFilterClick}>
+            <Filter className="h-3 md:h-4 w-3 md:w-4" />
           </Button>
-          <Button className="px-6 h-10 btn-primary" onClick={handleSearch}>
+          <Button className="px-3 md:px-6 h-8 md:h-10 text-xs md:text-sm btn-primary" onClick={handleSearch}>
             Search
           </Button>
         </div>
       </div>
 
       {/* Quick Filters */}
-      <div className="flex flex-wrap gap-3 mt-4 justify-center">
+      <div className="flex flex-wrap gap-2 md:gap-3 mt-3 md:mt-4 justify-center">
         <Button 
           variant="outline" 
           size="sm" 
-          className="border-primary/20 hover:bg-primary/5"
+          className="border-primary/20 hover:bg-primary/5 text-xs md:text-sm px-2 md:px-3"
           onClick={() => handleQuickFilter('Emergency Repair')}
         >
-          <Wrench className="h-4 w-4 mr-2 text-primary" />
-          {t.search.emergencyRepair}
+          <Wrench className="h-3 md:h-4 w-3 md:w-4 mr-1 md:mr-2 text-primary" />
+          <span className="hidden sm:inline">{t.search.emergencyRepair}</span>
+          <span className="sm:hidden">Emergency</span>
         </Button>
         
         {quickFilters.map((filter, index) => (
@@ -78,11 +79,12 @@ export default function SearchBar() {
             key={index}
             variant="outline" 
             size="sm"
-            className="border-border hover:bg-accent"
+            className="border-border hover:bg-accent text-xs md:text-sm px-2 md:px-3"
             onClick={() => handleQuickFilter(filter.name)}
           >
-            <filter.icon className={`h-4 w-4 mr-2 ${filter.color}`} />
-            {filter.name}
+            <filter.icon className={`h-3 md:h-4 w-3 md:w-4 mr-1 md:mr-2 ${filter.color}`} />
+            <span className="hidden sm:inline">{filter.name}</span>
+            <span className="sm:hidden">{filter.name.split(' ')[0]}</span>
           </Button>
         ))}
       </div>

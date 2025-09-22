@@ -212,50 +212,79 @@ export default function Index() {
         <HeroSection />
         
         {/* Welcome Section */}
-        <section id="welcome" className="section">
+        <section id="welcome" className="section bg-gradient-to-br from-background via-background to-muted/20">
           <div className="container">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="animate-fade-in [animation-delay:100ms]">
-                <span className="text-sm text-primary font-medium uppercase tracking-wider">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div className="animate-fade-in [animation-delay:100ms] space-y-6">
+                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+                  <Award className="h-4 w-4" />
                   {t.home.welcome.subtitle}
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-6">
+                </div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-tight">
                   {t.home.welcome.title}
                 </h2>
-                <p className="text-muted-foreground mb-6">
-                  {t.home.welcome.description1}
-                </p>
-                <p className="text-muted-foreground mb-8">
-                  {t.home.welcome.description2}
-                </p>
-                <Button asChild className="btn-primary">
-                  <Link to="/products">
-                    {t.home.welcome.learnMore} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
+                
+                <div className="space-y-4">
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    {t.home.welcome.description1}
+                  </p>
+                  <p className="text-muted-foreground">
+                    {t.home.welcome.description2}
+                  </p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Button asChild size="lg" className="btn-primary">
+                    <Link to="/products">
+                      {t.home.welcome.learnMore} <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="border-primary/20 hover:bg-primary/5">
+                    <Link to="/projects">
+                      <BookOpen className="mr-2 h-5 w-5" />
+                      View Projects
+                    </Link>
+                  </Button>
+                </div>
               </div>
               
               <div className="relative animate-fade-in [animation-delay:300ms]">
-                <div className="aspect-[4/3] rounded-2xl overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1581092795442-7d4b372c902d?w=800&h=600&fit=crop"
-                    alt="Professional workshop with tools" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-6 -left-6 w-2/3 rounded-2xl overflow-hidden shadow-xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop"
-                    alt="Hand tools collection" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute -top-6 -right-6 w-1/2 rounded-2xl overflow-hidden shadow-xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1585435557343-3b092031e57c?w=400&h=300&fit=crop"
-                    alt="Power tools" 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative">
+                  {/* Main Image */}
+                  <div className="aspect-[5/4] rounded-3xl overflow-hidden shadow-2xl">
+                    <img 
+                      src="https://images.unsplash.com/photo-1581092795442-7d4b372c902d?w=800&h=600&fit=crop"
+                      alt="Professional workshop with tools" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                  
+                  {/* Floating Cards */}
+                  <div className="absolute -bottom-8 -left-8 bg-card border rounded-2xl p-4 shadow-xl max-w-[200px]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Hammer className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">500+ Tools</p>
+                        <p className="text-xs text-muted-foreground">Professional Grade</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute -top-8 -right-8 bg-card border rounded-2xl p-4 shadow-xl max-w-[180px]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Users className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">10k+ Users</p>
+                        <p className="text-xs text-muted-foreground">Trust Us</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -263,32 +292,62 @@ export default function Index() {
         </section>
 
         {/* Categories Section */}
-        <section className="section bg-muted/30 pt-24 md:pt-16">
-          <div className="container">
-            <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
-              <span className="text-sm text-primary font-medium uppercase tracking-wider">
+        <section className="section bg-gradient-to-b from-muted/20 to-background relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-20 left-20 w-32 h-32 rounded-full bg-primary/20" />
+            <div className="absolute bottom-20 right-20 w-24 h-24 rounded-full bg-primary/10" />
+            <div className="absolute top-1/2 left-1/3 w-16 h-16 rounded-full bg-primary/15" />
+          </div>
+          
+          <div className="container relative">
+            <div className="text-center max-w-4xl mx-auto mb-16 animate-fade-in">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <Settings className="h-4 w-4" />
                 {t.home.categories.subtitle}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+              </div>
+              
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 {t.home.categories.title}
               </h2>
-              <p className="text-muted-foreground">
+              
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {t.home.categories.description}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Stats Banner */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 animate-fade-in [animation-delay:200ms]">
+              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">1000+</div>
+                <div className="text-sm text-muted-foreground">Products</div>
+              </div>
+              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">50+</div>
+                <div className="text-sm text-muted-foreground">Brands</div>
+              </div>
+              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">24/7</div>
+                <div className="text-sm text-muted-foreground">Support</div>
+              </div>
+              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">99%</div>
+                <div className="text-sm text-muted-foreground">Satisfaction</div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {categories.map((category, index) => (
-                <div key={index} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                <div key={index} className="animate-fade-in hover-scale" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
                   <CategoryCard {...category} />
                 </div>
               ))}
             </div>
             
-            <div className="text-center mt-12">
-              <Button asChild className="btn-primary">
+            <div className="text-center mt-16">
+              <Button asChild size="lg" className="btn-primary">
                 <Link to="/products">
-                  {t.home.categories.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
+                  {t.home.categories.viewAll} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
