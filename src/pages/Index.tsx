@@ -263,7 +263,7 @@ export default function Index() {
         </section>
 
         {/* Categories Section */}
-        <section className="section bg-muted/30">
+        <section className="section bg-muted/30 pt-24 md:pt-16">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
               <span className="text-sm text-primary font-medium uppercase tracking-wider">
