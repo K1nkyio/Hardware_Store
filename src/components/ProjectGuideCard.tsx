@@ -35,6 +35,7 @@ export default function ProjectGuideCard({ project }: ProjectGuideCardProps) {
             src={project.image} 
             alt={project.title}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
           />
           <div className="absolute top-3 left-3">
             <Badge className={difficultyColors[project.difficulty]}>

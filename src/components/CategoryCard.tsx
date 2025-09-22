@@ -19,6 +19,7 @@ export default function CategoryCard({ name, description, icon: Icon, image, pro
           src={image} 
           alt={name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          loading="lazy"
         />
         <div className="absolute inset-0 category-gradient opacity-90" />
         <div className="absolute inset-0 bg-black/30" />

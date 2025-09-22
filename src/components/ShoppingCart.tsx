@@ -90,6 +90,7 @@ export default function ShoppingCartComponent() {
                       src={item.image} 
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-md"
+                      loading="lazy"
                     />
                     
                     <div className="flex-1 space-y-2">

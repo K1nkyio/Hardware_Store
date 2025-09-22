@@ -32,7 +32,7 @@ const categories = [
     name: "Power Tools",
     description: "Professional-grade drills, saws, sanders, and more",
     icon: Zap,
-    image: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=500&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=500&h=300&fit=crop&auto=format&q=80",
     productCount: 245,
     href: "/products?category=power-tools"
   },
@@ -40,7 +40,7 @@ const categories = [
     name: "Hand Tools", 
     description: "Quality hammers, screwdrivers, pliers, and essentials",
     icon: Hammer,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop&auto=format&q=80",
     productCount: 189,
     href: "/products?category=hand-tools"
   },
@@ -88,7 +88,7 @@ const featuredProducts: ProductProps[] = [
     originalPrice: 199.99,
     rating: 4.8,
     reviewCount: 342,
-    image: "https://images.unsplash.com/photo-1585435557343-3b092031e57c?w=400&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1585435557343-3b092031e57c?w=400&h=400&fit=crop&auto=format&q=80",
     category: "Power Tools",
     brand: "DEWALT",
     inStock: true,
@@ -102,7 +102,7 @@ const featuredProducts: ProductProps[] = [
     price: 24.99,
     rating: 4.7,
     reviewCount: 156,
-    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop&auto=format&q=80",
     category: "Hand Tools",
     brand: "Klein Tools",
     inStock: true,
@@ -115,7 +115,7 @@ const featuredProducts: ProductProps[] = [
     price: 89.99,
     rating: 4.6,
     reviewCount: 89,
-    image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=400&fit=crop&auto=format&q=80",
     category: "Power Tools", 
     brand: "Bosch",
     inStock: true
@@ -128,7 +128,7 @@ const projectGuides: ProjectGuideProps[] = [
     id: "1",
     title: "Build a Modern Floating Shelf",
     description: "Learn to create sleek floating shelves that add both style and storage to any room.",
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format&q=80",
     difficulty: "Beginner",
     duration: "2-3 hours",
     category: "Woodworking",
@@ -140,7 +140,7 @@ const projectGuides: ProjectGuideProps[] = [
     id: "2",
     title: "Install Smart Light Switches",
     description: "Upgrade your home with smart switches for better lighting control and energy efficiency.",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format&q=80",
     difficulty: "Intermediate", 
     duration: "1-2 hours",
     category: "Electrical",
@@ -152,7 +152,7 @@ const projectGuides: ProjectGuideProps[] = [
     id: "3",
     title: "Build a Garden Planter Box",
     description: "Create a beautiful raised garden bed perfect for herbs, vegetables, or flowers.",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop&auto=format&q=80",
     difficulty: "Beginner",
     duration: "4-6 hours", 
     category: "Garden",
@@ -254,33 +254,37 @@ export default function Index() {
                   {/* Main Image */}
                   <div className="aspect-[5/4] rounded-3xl overflow-hidden shadow-2xl">
                     <img 
-                      src="https://images.unsplash.com/photo-1581092795442-7d4b372c902d?w=800&h=600&fit=crop"
-                      alt="Professional workshop with tools" 
+                      src="https://images.unsplash.com/photo-1581092795442-7d4b372c902d?w=800&h=600&fit=crop&auto=format&q=80"
+                      alt="Professional workshop with organized tools and equipment" 
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      width="800"
+                      height="600"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                   </div>
                   
-                  {/* Floating Cards */}
-                  <div className="absolute -bottom-8 -left-8 bg-card border rounded-2xl p-4 shadow-xl max-w-[200px]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Hammer className="h-6 w-6 text-primary" />
+                  {/* Floating Cards - Responsive */}
+                  <div className="absolute -bottom-4 md:-bottom-8 -left-2 md:-left-8 bg-card border rounded-xl md:rounded-2xl p-2 md:p-4 shadow-xl max-w-[160px] md:max-w-[200px]">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="w-8 md:w-12 h-8 md:h-12 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Hammer className="h-4 md:h-6 w-4 md:w-6 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm">500+ Tools</p>
-                        <p className="text-xs text-muted-foreground">Professional Grade</p>
+                        <p className="font-semibold text-xs md:text-sm">500+ Tools</p>
+                        <p className="text-xs text-muted-foreground hidden sm:block">Professional Grade</p>
+                        <p className="text-xs text-muted-foreground sm:hidden">Pro Grade</p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="absolute -top-8 -right-8 bg-card border rounded-2xl p-4 shadow-xl max-w-[180px]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Users className="h-6 w-6 text-primary" />
+                  <div className="absolute -top-4 md:-top-8 -right-2 md:-right-8 bg-card border rounded-xl md:rounded-2xl p-2 md:p-4 shadow-xl max-w-[140px] md:max-w-[180px]">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="w-8 md:w-12 h-8 md:h-12 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Users className="h-4 md:h-6 w-4 md:w-6 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm">10k+ Users</p>
+                        <p className="font-semibold text-xs md:text-sm">10k+ Users</p>
                         <p className="text-xs text-muted-foreground">Trust Us</p>
                       </div>
                     </div>

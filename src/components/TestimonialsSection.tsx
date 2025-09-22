@@ -104,6 +104,7 @@ export default function TestimonialsSection() {
                         src={testimonial.avatar} 
                         alt={testimonial.name} 
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     </div>
                     <div className="flex mb-2">
