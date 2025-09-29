@@ -44,7 +44,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex space-x-8">
+        <ul className="hidden lg:flex space-x-8">
           {navLinks.map(link => <li key={link.name} className="relative">
               <Link to={link.path} className="font-medium transition-colors hover:text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">
                 {link.name}
@@ -52,7 +52,7 @@ export default function Navbar() {
             </li>)}
         </ul>
 
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="hidden lg:flex items-center space-x-2">
           <div className="flex items-center space-x-1 mr-2">
             <LanguageSelector />
             <ThemeToggle />
@@ -71,7 +71,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center space-x-1">
+        <div className="lg:hidden flex items-center space-x-1">
           <ThemeToggle />
           <ShoppingCartComponent />
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
