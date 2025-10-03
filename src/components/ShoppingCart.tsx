@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Minus, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 
 export default function ShoppingCartComponent() {
+  const navigate = useNavigate();
   const { state, updateQuantity, removeFromCart, clearCart } = useCart();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -180,7 +182,14 @@ export default function ShoppingCartComponent() {
                 )}
 
                 <div className="flex flex-col gap-3 mt-4">
-                  <Button className="w-full" size="lg">
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/checkout');
+                    }}
+                  >
                     Proceed to Checkout
                   </Button>
                   

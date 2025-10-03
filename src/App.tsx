@@ -12,6 +12,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import ProfessionalDetail from "./pages/ProfessionalDetail";
 import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
+import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/professionals" element={<Professionals />} />
             <Route path="/professionals/:id" element={<ProfessionalDetail />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/checkout" element={<Checkout />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

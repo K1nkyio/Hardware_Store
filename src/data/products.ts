@@ -423,11 +423,149 @@ export const products: ProductProps[] = [
     price: 44.99,
     rating: 4.5,
     reviewCount: 234,
-    image: 'https://images.unsplash.com/photo-1609205807107-e1ec4458ffe0?w=400',
+    image: 'https://images.unsplash.com/photo-1609205807107-e1ec4458ffe0?w=400&h=400&fit=crop&auto=format&q=80',
     category: 'Storage',
     brand: 'Stanley',
     inStock: true,
     isNew: false,
     isBestSeller: true
+  },
+
+  // Drill Sets
+  {
+    id: '29',
+    name: 'DeWalt 20V MAX Drill and Impact Driver Combo Kit',
+    description: 'Complete drill set with cordless drill, impact driver, 2 batteries, and charger in carrying case.',
+    price: 249.99,
+    originalPrice: 299.99,
+    rating: 4.9,
+    reviewCount: 1567,
+    image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Power Tools',
+    brand: 'DeWalt',
+    inStock: true,
+    isNew: true,
+    isBestSeller: true,
+    discount: 17
+  },
+  {
+    id: '30',
+    name: 'Titanium Drill Bit Set 29-Piece',
+    description: 'Heavy-duty titanium-coated drill bit set for wood, metal, and plastic. Includes storage case.',
+    price: 39.99,
+    rating: 4.7,
+    reviewCount: 892,
+    image: 'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Power Tools',
+    brand: 'Bosch',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+
+  // Paint Brushes
+  {
+    id: '31',
+    name: 'Wooster Pro Series Paint Brush Set',
+    description: 'Professional-grade synthetic paint brush set with 5 sizes for all painting applications.',
+    price: 54.99,
+    rating: 4.8,
+    reviewCount: 678,
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Paint',
+    brand: 'Wooster',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '32',
+    name: 'Purdy Nylox Angle Sash Brush 2.5"',
+    description: 'Premium angled paint brush perfect for trim work and cutting-in. Holds more paint for efficiency.',
+    price: 18.99,
+    rating: 4.9,
+    reviewCount: 445,
+    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Paint',
+    brand: 'Purdy',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+
+  // Screws & Fasteners
+  {
+    id: '33',
+    name: 'Construction Screw Assortment 1000-Piece',
+    description: 'Comprehensive assortment of wood screws, drywall screws, and deck screws in organized compartment box.',
+    price: 49.99,
+    rating: 4.6,
+    reviewCount: 1234,
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Hardware',
+    brand: 'GRK',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '34',
+    name: 'Stainless Steel Wood Screws #8 x 2" (100-Pack)',
+    description: 'Corrosion-resistant stainless steel wood screws ideal for outdoor projects and decking.',
+    price: 22.99,
+    rating: 4.5,
+    reviewCount: 567,
+    image: 'https://images.unsplash.com/photo-1609205806914-41de0c35b0ba?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Hardware',
+    brand: 'Spax',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+
+  // Safety Gear
+  {
+    id: '35',
+    name: 'Professional Safety Kit 7-Piece',
+    description: 'Complete safety gear set including hard hat, safety glasses, ear protection, gloves, and dust masks.',
+    price: 69.99,
+    originalPrice: 89.99,
+    rating: 4.7,
+    reviewCount: 892,
+    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Safety',
+    brand: 'DeWalt',
+    inStock: true,
+    isNew: true,
+    isBestSeller: true,
+    discount: 22
+  },
+  {
+    id: '36',
+    name: 'Heavy Duty Work Gloves 6-Pack',
+    description: 'Durable leather palm work gloves with reinforced fingertips and adjustable wrist closure.',
+    price: 29.99,
+    rating: 4.6,
+    reviewCount: 445,
+    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Safety',
+    brand: 'Ironclad',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
+  },
+  {
+    id: '37',
+    name: 'Reflective Safety Vest with Pockets',
+    description: 'High-visibility safety vest with ANSI certification and multiple storage pockets.',
+    price: 14.99,
+    rating: 4.4,
+    reviewCount: 678,
+    image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop&auto=format&q=80',
+    category: 'Safety',
+    brand: 'ML Kishigo',
+    inStock: true,
+    isNew: false,
+    isBestSeller: false
   }
 ];
