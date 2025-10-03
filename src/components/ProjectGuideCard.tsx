@@ -28,7 +28,7 @@ const difficultyColors = {
 
 export default function ProjectGuideCard({ project }: ProjectGuideCardProps) {
   return (
-    <Link to="/professionals" className="block">
+    <Link to={`/projects/${project.id}`} className="block">
       <div className="project-card group">
         <div className="relative h-48 overflow-hidden">
           <img 
