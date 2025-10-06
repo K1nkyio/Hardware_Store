@@ -82,10 +82,10 @@ export default function Products() {
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                {searchTerm ? `Search Results for "${searchTerm}"` : categoryParam ? `${categoryParam} Products` : t.products.title}
+                {searchTerm ? `${t.common.searchResults} "${searchTerm}"` : categoryParam ? `${categoryParam} ${t.products.title}` : t.products.title}
               </h1>
               <p className="text-xl text-muted-foreground">
-                {searchTerm || categoryParam ? `Found ${filteredProducts.length} results` : t.products.subtitle}
+                {searchTerm || categoryParam ? `${t.common.foundResults} ${filteredProducts.length} ${t.common.results}` : t.products.subtitle}
               </p>
             </div>
             

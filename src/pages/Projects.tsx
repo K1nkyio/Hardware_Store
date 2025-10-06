@@ -73,7 +73,7 @@ export default function Projects() {
                   <SelectContent>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
-                        {category === "all" ? "All Categories" : category}
+                        {category === "all" ? t.common.allCategories : category}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -95,13 +95,13 @@ export default function Projects() {
             {filteredGuides.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg mb-4">
-                  No project guides match your current filters.
+                  {t.common.noMatchFilters}
                 </p>
                 <Button onClick={() => {
                   setSkillFilter("all");
                   setCategoryFilter("all");
                 }}>
-                  Clear Filters
+                  {t.common.clearFilters}
                 </Button>
               </div>
             )}

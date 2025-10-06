@@ -14,3 +14,8 @@ export const formatDualCurrency = (priceUSD: number) => {
   const { usd, ksh } = formatCurrency(priceUSD);
   return `${usd} / ${ksh}`;
 };
+
+// Single currency format (USD by default)
+export const formatPrice = (priceUSD: number) => {
+  return `$${priceUSD.toFixed(2)}`;
+};

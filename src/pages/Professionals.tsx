@@ -63,19 +63,19 @@ export default function Professionals() {
             <div className="flex justify-between items-center mb-8">
               <Select value={professionFilter} onValueChange={setProfessionFilter}>
                 <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Filter by profession" />
+                  <SelectValue placeholder={t.common.filterByProfession} />
                 </SelectTrigger>
                 <SelectContent>
                   {professionCategories.map(category => (
                     <SelectItem key={category} value={category}>
-                      {category === "all" ? "All Professionals" : category}
+                      {category === "all" ? t.common.allProfessionals : category}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               
               <Badge variant="secondary">
-                {filteredPros.length} professionals available
+                {filteredPros.length} {t.common.professionalsAvailable}
               </Badge>
             </div>
 
@@ -121,7 +121,7 @@ export default function Professionals() {
                     
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      {pro.yearsExperience} years experience
+                      {pro.yearsExperience} {t.common.yearsExperience}
                     </div>
 
                     <p className="text-sm text-muted-foreground line-clamp-2">

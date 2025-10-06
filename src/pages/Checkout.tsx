@@ -10,12 +10,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { CreditCard, Smartphone, ShieldCheck, ArrowLeft } from "lucide-react";
+import { formatPrice } from "@/utils/currency";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { state, clearCart } = useCart();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "card">("mpesa");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -39,8 +42,8 @@ export default function Checkout() {
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold">Your cart is empty</h2>
-            <Button onClick={() => navigate("/products")}>Continue Shopping</Button>
+            <h2 className="text-2xl font-bold">{t.checkout.emptyCart}</h2>
+            <Button onClick={() => navigate("/products")}>{t.checkout.continueShopping}</Button>
           </div>
         </main>
         <Footer />
@@ -56,8 +59,8 @@ export default function Checkout() {
     setTimeout(() => {
       setIsProcessing(false);
       toast({
-        title: "Payment Successful!",
-        description: `Your order has been placed successfully. ${paymentMethod === "mpesa" ? "Check your phone for M-Pesa prompt." : "Payment confirmation sent to your email."}`,
+        title: t.checkout.paymentSuccess,
+        description: `${t.checkout.paymentSuccessMessage} ${paymentMethod === "mpesa" ? t.checkout.mpesaInstructions : ""}`,
       });
       clearCart();
       navigate("/");
@@ -76,10 +79,10 @@ export default function Checkout() {
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Cart
+            {t.checkout.backToCart}
           </Button>
 
-          <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+          <h1 className="text-3xl font-bold mb-8">{t.checkout.title}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Checkout Form */}
@@ -87,38 +90,38 @@ export default function Checkout() {
               {/* Contact Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
-                  <CardDescription>We'll use this to send your order confirmation</CardDescription>
+                  <CardTitle>{t.checkout.contactInformation}</CardTitle>
+                  <CardDescription>{t.checkout.paymentSuccessMessage}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email">{t.checkout.email}</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="your@email.com"
+                      placeholder={t.checkout.enterEmail}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">{t.checkout.name}</Label>
                     <Input
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder={t.checkout.enterName}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">{t.checkout.phone}</Label>
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="+254 700 000 000"
+                      placeholder={t.checkout.enterPhoneNumber}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
@@ -130,8 +133,8 @@ export default function Checkout() {
               {/* Payment Method */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Payment Method</CardTitle>
-                  <CardDescription>Choose your preferred payment method</CardDescription>
+                  <CardTitle>{t.checkout.paymentMethod}</CardTitle>
+                  <CardDescription>{t.checkout.paymentSuccessMessage}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
@@ -141,8 +144,8 @@ export default function Checkout() {
                         <Label htmlFor="mpesa" className="flex items-center gap-3 cursor-pointer flex-1">
                           <Smartphone className="h-5 w-5 text-green-600" />
                           <div>
-                            <div className="font-medium">M-Pesa</div>
-                            <div className="text-sm text-muted-foreground">Pay with your M-Pesa mobile money</div>
+                            <div className="font-medium">{t.checkout.mpesa}</div>
+                            <div className="text-sm text-muted-foreground">{t.checkout.mpesaInstructions}</div>
                           </div>
                         </Label>
                       </div>
@@ -152,8 +155,8 @@ export default function Checkout() {
                         <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
                           <CreditCard className="h-5 w-5 text-blue-600" />
                           <div>
-                            <div className="font-medium">Debit/Credit Card</div>
-                            <div className="text-sm text-muted-foreground">Pay with Visa, Mastercard, or other cards</div>
+                            <div className="font-medium">{t.checkout.card}</div>
+                            <div className="text-sm text-muted-foreground">{t.checkout.securePaymentMessage}</div>
                           </div>
                         </Label>
                       </div>
@@ -162,10 +165,10 @@ export default function Checkout() {
                     {paymentMethod === "card" && (
                       <div className="space-y-4 animate-fade-in">
                         <div className="space-y-2">
-                          <Label htmlFor="cardNumber">Card Number</Label>
+                          <Label htmlFor="cardNumber">{t.checkout.cardNumber}</Label>
                           <Input
                             id="cardNumber"
-                            placeholder="1234 5678 9012 3456"
+                            placeholder={t.checkout.enterCard}
                             value={cardNumber}
                             onChange={(e) => setCardNumber(e.target.value)}
                             maxLength={19}
@@ -174,10 +177,10 @@ export default function Checkout() {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="expiryDate">Expiry Date</Label>
+                            <Label htmlFor="expiryDate">{t.checkout.expiryDate}</Label>
                             <Input
                               id="expiryDate"
-                              placeholder="MM/YY"
+                              placeholder={t.checkout.enterExpiry}
                               value={expiryDate}
                               onChange={(e) => setExpiryDate(e.target.value)}
                               maxLength={5}
@@ -185,10 +188,10 @@ export default function Checkout() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="cvv">CVV</Label>
+                            <Label htmlFor="cvv">{t.checkout.cvv}</Label>
                             <Input
                               id="cvv"
-                              placeholder="123"
+                              placeholder={t.checkout.enterCvv}
                               value={cvv}
                               onChange={(e) => setCvv(e.target.value)}
                               maxLength={4}
@@ -202,7 +205,7 @@ export default function Checkout() {
 
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <ShieldCheck className="h-4 w-4" />
-                      <span>Your payment information is secure and encrypted</span>
+                      <span>{t.checkout.securePaymentMessage}</span>
                     </div>
 
                     <Button
@@ -211,7 +214,7 @@ export default function Checkout() {
                       size="lg"
                       disabled={isProcessing}
                     >
-                      {isProcessing ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
+                      {isProcessing ? t.checkout.processing : `${t.checkout.completePayment} ${formatPrice(totalAmount)}`}
                     </Button>
                   </form>
                 </CardContent>
@@ -222,7 +225,7 @@ export default function Checkout() {
             <div className="lg:col-span-1">
               <Card className="sticky top-24">
                 <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
+                  <CardTitle>{t.checkout.orderSummary}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3 max-h-60 overflow-y-auto">
@@ -235,8 +238,8 @@ export default function Checkout() {
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{item.name}</p>
-                          <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                          <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">{t.common.qty}: {item.quantity}</p>
+                          <p className="text-sm font-medium">{formatPrice(item.price * item.quantity)}</p>
                         </div>
                       </div>
                     ))}
@@ -246,21 +249,21 @@ export default function Checkout() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>{t.checkout.subtotal}</span>
+                      <span>{formatPrice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Shipping</span>
-                      <span>{shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}</span>
+                      <span>{t.checkout.shipping}</span>
+                      <span>{shipping === 0 ? t.checkout.free : formatPrice(shipping)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Tax</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span>{t.checkout.tax}</span>
+                      <span>{formatPrice(tax)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-bold text-lg">
-                      <span>Total</span>
-                      <span>${totalAmount.toFixed(2)}</span>
+                      <span>{t.checkout.total}</span>
+                      <span>{formatPrice(totalAmount)}</span>
                     </div>
                   </div>
                 </CardContent>
