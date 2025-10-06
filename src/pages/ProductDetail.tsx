@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatCurrency } from "@/utils/currency";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -188,19 +189,29 @@ export default function ProductDetail() {
 
                 {/* Price */}
                 <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-primary">
-                      ${product.price.toFixed(2)}
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-lg text-muted-foreground line-through">
-                        ${product.originalPrice.toFixed(2)}
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-primary">
+                        {formatCurrency(product.price).usd}
                       </span>
+                      <span className="text-lg text-muted-foreground">
+                        / {formatCurrency(product.price).ksh}
+                      </span>
+                    </div>
+                    {product.originalPrice && (
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-lg text-muted-foreground line-through">
+                          {formatCurrency(product.originalPrice).usd}
+                        </span>
+                        <span className="text-sm text-muted-foreground line-through">
+                          / {formatCurrency(product.originalPrice).ksh}
+                        </span>
+                      </div>
                     )}
                   </div>
                   {product.originalPrice && (
                     <p className="text-sm text-success">
-                      You save ${(product.originalPrice - product.price).toFixed(2)}
+                      You save {formatCurrency(product.originalPrice - product.price).usd} / {formatCurrency(product.originalPrice - product.price).ksh}
                     </p>
                   )}
                 </div>
@@ -251,7 +262,7 @@ export default function ProductDetail() {
                       size="sm"
                     >
                       <ShoppingCart className="h-3 w-3 mr-1" />
-                      Add to Cart - ${(product.price * quantity).toFixed(2)}
+                      Add to Cart - {formatCurrency(product.price * quantity).usd}
                     </Button>
                   </div>
                 </div>
