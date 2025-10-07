@@ -14,7 +14,267 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      order_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          order_id?: string
+          price?: number
+          product_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          payment_method: string
+          payment_status: string | null
+          shipping: number
+          subtotal: number
+          tax: number
+          total_amount: number
+          transaction_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          payment_method: string
+          payment_status?: string | null
+          shipping: number
+          subtotal: number
+          tax: number
+          total_amount: number
+          transaction_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          payment_method?: string
+          payment_status?: string | null
+          shipping?: number
+          subtotal?: number
+          tax?: number
+          total_amount?: number
+          transaction_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          features: string[] | null
+          id: string
+          image: string
+          in_stock: boolean | null
+          name: string
+          price: number
+          rating: number | null
+          reviews: number | null
+          specifications: Json | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          image: string
+          in_stock?: boolean | null
+          name: string
+          price: number
+          rating?: number | null
+          reviews?: number | null
+          specifications?: Json | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          image?: string
+          in_stock?: boolean | null
+          name?: string
+          price?: number
+          rating?: number | null
+          reviews?: number | null
+          specifications?: Json | null
+        }
+        Relationships: []
+      }
+      professionals: {
+        Row: {
+          available: boolean | null
+          bio: string | null
+          certifications: string[] | null
+          created_at: string | null
+          experience_years: number | null
+          hourly_rate: number | null
+          id: string
+          image: string
+          location: string | null
+          name: string
+          rating: number | null
+          reviews: number | null
+          services: string[] | null
+          specialty: string
+        }
+        Insert: {
+          available?: boolean | null
+          bio?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          image: string
+          location?: string | null
+          name: string
+          rating?: number | null
+          reviews?: number | null
+          services?: string[] | null
+          specialty: string
+        }
+        Update: {
+          available?: boolean | null
+          bio?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          image?: string
+          location?: string | null
+          name?: string
+          rating?: number | null
+          reviews?: number | null
+          services?: string[] | null
+          specialty?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          difficulty: string
+          duration: string
+          id: string
+          image: string
+          materials: string[] | null
+          steps: Json | null
+          tips: string[] | null
+          title: string
+          tools: string[] | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          difficulty: string
+          duration: string
+          id?: string
+          image: string
+          materials?: string[] | null
+          steps?: Json | null
+          tips?: string[] | null
+          title: string
+          tools?: string[] | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string
+          duration?: string
+          id?: string
+          image?: string
+          materials?: string[] | null
+          steps?: Json | null
+          tips?: string[] | null
+          title?: string
+          tools?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
