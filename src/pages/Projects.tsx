@@ -2,24 +2,46 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { projectGuides } from "@/data/projectGuides";
+import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 import ProjectGuideCard from "@/components/ProjectGuideCard";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
+type Project = Database['public']['Tables']['projects']['Row'];
+
 export default function Projects() {
   const { t } = useLanguage();
-  const [filteredGuides, setFilteredGuides] = useState(projectGuides);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filteredGuides, setFilteredGuides] = useState<Project[]>([]);
   const [skillFilter, setSkillFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchProjects();
   }, []);
 
+  const fetchProjects = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*');
+      
+      if (error) throw error;
+      setProjects(data || []);
+      setFilteredGuides(data || []);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    let filtered = projectGuides;
+    let filtered = projects;
     
     if (skillFilter !== "all") {
       filtered = filtered.filter(guide => guide.difficulty === skillFilter);
@@ -30,10 +52,22 @@ export default function Projects() {
     }
     
     setFilteredGuides(filtered);
-  }, [skillFilter, categoryFilter]);
+  }, [skillFilter, categoryFilter, projects]);
 
-  const categories = ["all", ...Array.from(new Set(projectGuides.map(guide => guide.category)))];
+  const categories = ["all", ...Array.from(new Set(projects.map(guide => guide.category)))];
   const difficulties = ["all", "Beginner", "Intermediate", "Advanced"];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 pt-24 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading projects...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -88,7 +122,18 @@ export default function Projects() {
             {/* Project Guides Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredGuides.map(guide => (
-                <ProjectGuideCard key={guide.id} project={guide} />
+                <ProjectGuideCard key={guide.id} project={{
+                  id: guide.id,
+                  title: guide.title,
+                  description: guide.description || '',
+                  image: guide.image,
+                  difficulty: guide.difficulty as "Beginner" | "Intermediate" | "Advanced",
+                  duration: guide.duration,
+                  category: guide.category,
+                  materials: guide.materials || [],
+                  steps: Array.isArray(guide.steps) ? guide.steps.length : 0,
+                  tools: guide.tools || []
+                }} />
               ))}
             </div>
 

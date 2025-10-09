@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, Wrench } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, Wrench, LogOut, User } from "lucide-react";
 import ShoppingCartComponent from "@/components/ShoppingCart";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
@@ -9,11 +9,28 @@ import LanguageSelector from "./LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Navbar() {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const handleAuthAction = async () => {
+    if (user) {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+    } else {
+      navigate("/auth");
+    }
+  };
   
   const navLinks = [
     { name: t.nav.home, path: "/" },
@@ -61,12 +78,9 @@ export default function Navbar() {
           <Button 
             className="btn-primary" 
             size="sm"
-            onClick={() => {
-              const cartTrigger = document.querySelector('[data-cart-trigger]') as HTMLButtonElement;
-              if (cartTrigger) cartTrigger.click();
-            }}
+            onClick={handleAuthAction}
           >
-            {t.nav.account}
+            {user ? <><LogOut className="w-4 h-4 mr-2" /> Sign Out</> : <><User className="w-4 h-4 mr-2" /> {t.nav.account}</>}
           </Button>
         </div>
 
@@ -125,13 +139,10 @@ export default function Navbar() {
                     className="w-full"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setTimeout(() => {
-                        const cartTrigger = document.querySelector('[data-cart-trigger]') as HTMLButtonElement;
-                        if (cartTrigger) cartTrigger.click();
-                      }, 100);
+                      handleAuthAction();
                     }}
                   >
-                    {t.nav.account}
+                    {user ? <><LogOut className="w-4 h-4 mr-2" /> Sign Out</> : <><User className="w-4 h-4 mr-2" /> {t.nav.account}</>}
                   </Button>
                 </div>
               </div>

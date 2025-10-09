@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { CreditCard, Smartphone, ShieldCheck, ArrowLeft } from "lucide-react";
 import { formatPrice } from "@/utils/currency";
 
@@ -19,7 +21,8 @@ export default function Checkout() {
   const { state, clearCart } = useCart();
   const { toast } = useToast();
   const { t } = useLanguage();
-  const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "card">("mpesa");
+  const { user } = useAuth();
+  const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "card">("card");
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Form states
@@ -35,6 +38,21 @@ export default function Checkout() {
   const shipping = subtotal > 100 ? 0 : 10;
   const tax = subtotal * 0.08;
   const totalAmount = subtotal + shipping + tax;
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold">Please log in to checkout</h2>
+            <Button onClick={() => navigate("/auth")}>Go to Login</Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -55,16 +73,57 @@ export default function Checkout() {
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: user.id,
+          customer_email: email,
+          customer_phone: phone,
+          customer_name: name,
+          subtotal: subtotal,
+          shipping: shipping,
+          tax: tax,
+          total_amount: totalAmount,
+          payment_method: paymentMethod,
+          payment_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = items.map(item => ({
+        order_id: order.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
       toast({
         title: t.checkout.paymentSuccess,
-        description: `${t.checkout.paymentSuccessMessage} ${paymentMethod === "mpesa" ? t.checkout.mpesaInstructions : ""}`,
+        description: `${t.checkout.paymentSuccessMessage} Order ID: ${order.id}`,
       });
       clearCart();
       navigate("/");
-    }, 2000);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

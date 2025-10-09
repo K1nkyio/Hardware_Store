@@ -3,31 +3,65 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { professionals } from "@/data/professionals";
+import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Clock, CheckCircle, Phone, Mail } from "lucide-react";
+import { Star, MapPin, Clock, CheckCircle, Phone } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+type Professional = Database['public']['Tables']['professionals']['Row'];
 
 export default function Professionals() {
   const { t } = useLanguage();
-  const [filteredPros, setFilteredPros] = useState(professionals);
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filteredPros, setFilteredPros] = useState<Professional[]>([]);
   const [professionFilter, setProfessionFilter] = useState<string>("all");
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchProfessionals();
   }, []);
+
+  const fetchProfessionals = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('professionals')
+        .select('*');
+      
+      if (error) throw error;
+      setProfessionals(data || []);
+      setFilteredPros(data || []);
+    } catch (error) {
+      console.error('Error fetching professionals:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (professionFilter === "all") {
       setFilteredPros(professionals);
     } else {
-      setFilteredPros(professionals.filter(pro => pro.profession.toLowerCase().includes(professionFilter.toLowerCase())));
+      setFilteredPros(professionals.filter(pro => pro.specialty.toLowerCase().includes(professionFilter.toLowerCase())));
     }
-  }, [professionFilter]);
+  }, [professionFilter, professionals]);
 
-  const professionCategories = ["all", "General Contractor", "Electrician", "Plumber", "HVAC", "Roofing", "Flooring"];
+  const professionCategories = ["all", ...Array.from(new Set(professionals.map(pro => pro.specialty)))];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 pt-24 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading professionals...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -93,12 +127,12 @@ export default function Professionals() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <CardTitle className="text-lg">{pro.name}</CardTitle>
-                          {pro.verified && (
+                          {pro.available && (
                             <CheckCircle className="w-5 h-5 text-green-500" />
                           )}
                         </div>
                         <CardDescription className="text-primary font-medium">
-                          {pro.profession}
+                          {pro.specialty}
                         </CardDescription>
                         <div className="flex items-center gap-2 mt-2">
                           <div className="flex items-center gap-1">
@@ -121,30 +155,32 @@ export default function Professionals() {
                     
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      {pro.yearsExperience} {t.common.yearsExperience}
+                      {pro.experience_years} {t.common.yearsExperience}
                     </div>
 
                     <p className="text-sm text-muted-foreground line-clamp-2">
-                      {pro.description}
+                      {pro.bio}
                     </p>
 
-                    <div className="flex flex-wrap gap-2">
-                      {pro.specialties.slice(0, 2).map(specialty => (
-                        <Badge key={specialty} variant="outline" className="text-xs">
-                          {specialty}
-                        </Badge>
-                      ))}
-                    </div>
+                    {pro.services && (
+                      <div className="flex flex-wrap gap-2">
+                        {(pro.services as string[]).slice(0, 2).map(specialty => (
+                          <Badge key={specialty} variant="outline" className="text-xs">
+                            {specialty}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
 
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-semibold text-primary">
-                        {pro.hourlyRate}/hr
+                        ${pro.hourly_rate}/hr
                       </span>
                       <Badge 
-                        variant={pro.availability === "Available for new projects" ? "default" : "secondary"}
+                        variant={pro.available ? "default" : "secondary"}
                         className="text-xs"
                       >
-                        {pro.availability}
+                        {pro.available ? "Available" : "Unavailable"}
                       </Badge>
                     </div>
                   </CardContent>

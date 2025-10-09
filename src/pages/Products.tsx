@@ -5,11 +5,16 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import ProductFilters, { FilterState } from "@/components/ProductFilters";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { products } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
+
+type Product = Database['public']['Tables']['products']['Row'];
 
 export default function Products() {
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
     priceRange: [0, 500],
@@ -17,6 +22,25 @@ export default function Products() {
     minRating: 0,
     inStockOnly: false
   });
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*');
+      
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get search term and category from URL params
   const searchTerm = searchParams.get('search') || '';
@@ -28,9 +52,8 @@ export default function Products() {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
         product.name.toLowerCase().includes(searchLower) ||
-        product.brand.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower);
+        (product.description && product.description.toLowerCase().includes(searchLower));
       
       if (!matchesSearch) return false;
     }
@@ -42,22 +65,19 @@ export default function Products() {
     }
 
     // Price range filter
-    if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) {
-      return false;
-    }
-
-    // Brand filter
-    if (filters.brands.length > 0 && !filters.brands.includes(product.brand)) {
+    const price = Number(product.price);
+    if (price < filters.priceRange[0] || price > filters.priceRange[1]) {
       return false;
     }
 
     // Rating filter
-    if (product.rating < filters.minRating) {
+    const rating = Number(product.rating || 0);
+    if (rating < filters.minRating) {
       return false;
     }
 
     // Stock filter
-    if (filters.inStockOnly && !product.inStock) {
+    if (filters.inStockOnly && !product.in_stock) {
       return false;
     }
 
@@ -72,6 +92,18 @@ export default function Products() {
       setFilters(prev => ({ ...prev, category: categoryParam }));
     }
   }, [categoryParam]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 pt-24 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading products...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -115,7 +147,18 @@ export default function Products() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredProducts.map((product) => (
-                      <ProductCard key={product.id} product={product} />
+                      <ProductCard key={product.id} product={{
+                        id: product.id,
+                        name: product.name,
+                        price: Number(product.price),
+                        rating: Number(product.rating || 0),
+                        reviewCount: Number(product.reviews || 0),
+                        image: product.image,
+                        category: product.category,
+                        inStock: product.in_stock || false,
+                        brand: '',
+                        description: product.description || ''
+                      }} />
                     ))}
                   </div>
                 )}
