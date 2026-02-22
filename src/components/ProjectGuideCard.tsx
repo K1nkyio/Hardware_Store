@@ -1,5 +1,4 @@
-import { Clock, User, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, Layers, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
@@ -21,55 +20,63 @@ interface ProjectGuideCardProps {
 }
 
 const difficultyColors = {
-  'Beginner': 'bg-success text-success-foreground',
-  'Intermediate': 'bg-warning text-warning-foreground', 
-  'Advanced': 'bg-destructive text-destructive-foreground'
+  'Beginner': 'bg-success/10 text-success border-success/20',
+  'Intermediate': 'bg-warning/10 text-warning border-warning/20', 
+  'Advanced': 'bg-destructive/10 text-destructive border-destructive/20'
 };
 
 export default function ProjectGuideCard({ project }: ProjectGuideCardProps) {
   return (
-    <Link to={`/projects/${project.id}`} className="block">
-      <div className="project-card group">
-        <div className="relative h-48 overflow-hidden">
+    <Link to={`/projects/${project.id}`} className="group block">
+      <div className="relative bg-card rounded-2xl border border-border overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20">
+        {/* Image */}
+        <div className="relative h-52 overflow-hidden">
           <img 
             src={project.image} 
             alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
           />
-          <div className="absolute top-3 left-3">
-            <Badge className={difficultyColors[project.difficulty]}>
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+          
+          {/* Difficulty badge */}
+          <div className="absolute top-4 left-4">
+            <Badge className={`${difficultyColors[project.difficulty]} border text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full backdrop-blur-sm`}>
               {project.difficulty}
             </Badge>
           </div>
+
+          {/* Category chip */}
+          <div className="absolute top-4 right-4">
+            <span className="bg-foreground/60 backdrop-blur-sm text-primary-foreground text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase">
+              {project.category}
+            </span>
+          </div>
         </div>
         
-        <div className="p-6">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{project.duration}</span>
+        {/* Content */}
+        <div className="p-5 -mt-6 relative">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+            <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-full">
+              <Clock className="h-3 w-3" />
+              <span className="font-medium">{project.duration}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <User className="h-4 w-4" />
-              <span>{project.steps} steps</span>
+            <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-full">
+              <Layers className="h-3 w-3" />
+              <span className="font-medium">{project.steps} steps</span>
             </div>
           </div>
           
-          <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+          <h3 className="font-bold text-lg mb-2 leading-snug group-hover:text-primary transition-colors duration-300">
             {project.title}
           </h3>
           
-          <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+          <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed">
             {project.description}
           </p>
           
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-primary">{project.category}</span>
-            <div className="flex items-center text-primary group-hover:text-primary/80 transition-colors">
-              <span className="text-sm font-medium mr-1">Start Project</span>
-              <ArrowRight className="h-4 w-4" />
-            </div>
+          <div className="flex items-center text-sm font-bold text-primary opacity-0 translate-x-[-4px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+            Start Project <ArrowUpRight className="ml-1 h-4 w-4" />
           </div>
         </div>
       </div>

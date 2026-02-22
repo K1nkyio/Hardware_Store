@@ -1,118 +1,99 @@
-import { ArrowRight, ShoppingBag, BookOpen, Wrench, Star } from "lucide-react";
+import { ArrowRight, ShoppingBag, BookOpen, Wrench, Star, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import SearchBar from "./SearchBar";
 
 export default function HeroSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-foreground">
-      {/* Diagonal accent */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -right-1/4 w-[80%] h-[200%] bg-primary/10 rotate-12 origin-center" />
-        <div className="absolute -bottom-1/2 -left-1/4 w-[60%] h-[200%] bg-primary/5 -rotate-12 origin-center" />
+    <section className="relative min-h-screen flex items-end pb-0 overflow-hidden bg-foreground">
+      {/* Full background image */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1600&h=1000&fit=crop&auto=format&q=80"
+          alt="Workshop"
+          className="w-full h-full object-cover"
+          loading="eager"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground via-foreground/85 to-foreground/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground via-transparent to-foreground/30" />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: 'repeating-linear-gradient(0deg, white 0px, transparent 1px, transparent 60px), repeating-linear-gradient(90deg, white 0px, transparent 1px, transparent 60px)'
-      }} />
-
-      <div className="container relative z-10 py-16 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left content */}
-          <div className="space-y-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 bg-primary/20 text-primary px-4 py-2 rounded-full text-sm font-semibold tracking-wide uppercase">
-              <ShoppingBag className="h-4 w-4" />
+      <div className="container relative z-10 pb-16 pt-32 md:pt-40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+          {/* Main content - takes 7 cols */}
+          <div className="lg:col-span-7 space-y-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 border border-primary/40 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase">
+              <ShoppingBag className="h-3.5 w-3.5" />
               {t.hero.subtitle}
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[0.95] tracking-tight">
-              <span className="text-primary-foreground">Build Your</span>
-              <br />
-              <span className="text-gradient">Dreams</span>
-              <br />
-              <span className="text-primary-foreground/60 text-3xl md:text-4xl lg:text-5xl font-bold">with Confidence</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tighter">
+              <span className="text-primary-foreground block">Build</span>
+              <span className="text-gradient block">Your Dreams.</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-primary-foreground/50 max-w-lg leading-relaxed">
+            <p className="text-base md:text-lg text-primary-foreground/45 max-w-md leading-relaxed font-light">
               {t.hero.description}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in [animation-delay:200ms]">
-              <Button asChild size="lg" className="btn-primary text-base px-8 py-6 rounded-xl text-lg font-bold shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 transition-all">
+            <div className="flex flex-wrap gap-3 pt-2 animate-fade-in [animation-delay:200ms]">
+              <Button asChild size="lg" className="bg-primary text-primary-foreground rounded-full px-8 py-6 text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 hover:scale-[1.02] transition-all duration-300">
                 <Link to="/products">
                   {t.hero.shopNow} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
 
-              <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 rounded-xl text-lg border-primary-foreground/20 text-primary-foreground/80 hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all">
+              <Button asChild variant="ghost" size="lg" className="rounded-full px-8 py-6 text-base text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-all duration-300">
                 <Link to="/projects">
                   <BookOpen className="mr-2 h-5 w-5" />
                   {t.hero.findProject}
                 </Link>
               </Button>
             </div>
-
-            {/* Trust badges */}
-            <div className="flex items-center gap-6 pt-4 animate-fade-in [animation-delay:400ms]">
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-primary fill-primary" />
-                  ))}
-                </div>
-                <span className="text-primary-foreground/50 text-sm font-medium">4.9/5</span>
-              </div>
-              <div className="h-4 w-px bg-primary-foreground/20" />
-              <span className="text-primary-foreground/50 text-sm">10,000+ Happy Builders</span>
-            </div>
           </div>
 
-          {/* Right - Image composition */}
-          <div className="relative animate-fade-in [animation-delay:300ms]">
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
-              <img
-                src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=800&h=1000&fit=crop&auto=format&q=80"
-                alt="Professional craftsman at work"
-                className="w-full h-full object-cover"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
-
-              {/* Overlay stats card */}
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="bg-card/95 backdrop-blur-md rounded-2xl p-5 border border-border/50">
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <div className="text-2xl font-extrabold text-primary">500+</div>
-                      <div className="text-xs text-muted-foreground font-medium">Products</div>
-                    </div>
-                    <div className="border-x border-border">
-                      <div className="text-2xl font-extrabold text-primary">50+</div>
-                      <div className="text-xs text-muted-foreground font-medium">Brands</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-extrabold text-primary">24/7</div>
-                      <div className="text-xs text-muted-foreground font-medium">Support</div>
-                    </div>
-                  </div>
+          {/* Right side - stats strip */}
+          <div className="lg:col-span-5 animate-fade-in [animation-delay:400ms]">
+            <div className="grid grid-cols-3 gap-px bg-primary-foreground/10 rounded-2xl overflow-hidden backdrop-blur-md border border-primary-foreground/10">
+              {[
+                { value: "500+", label: "Products" },
+                { value: "50+", label: "Top Brands" },
+                { value: "10k+", label: "Builders" },
+              ].map((stat, i) => (
+                <div key={i} className="bg-foreground/60 backdrop-blur-sm p-5 md:p-6 text-center">
+                  <div className="text-2xl md:text-3xl font-black text-primary">{stat.value}</div>
+                  <div className="text-xs text-primary-foreground/40 font-medium mt-1 uppercase tracking-wider">{stat.label}</div>
                 </div>
-              </div>
+              ))}
             </div>
 
-            {/* Floating accent element */}
-            <div className="absolute -top-4 -left-4 w-24 h-24 rounded-2xl bg-primary/20 backdrop-blur-sm border border-primary/30 flex items-center justify-center animate-float">
-              <Wrench className="h-10 w-10 text-primary" />
+            {/* Trust row */}
+            <div className="flex items-center justify-between mt-4 px-2">
+              <div className="flex items-center gap-1.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 text-primary fill-primary" />
+                ))}
+                <span className="text-primary-foreground/40 text-xs ml-1 font-medium">4.9/5 rating</span>
+              </div>
+              <div className="flex items-center gap-1 text-primary-foreground/30 text-xs">
+                <Wrench className="h-3.5 w-3.5" />
+                <span>24/7 Support</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Search bar below */}
-        <div className="mt-16 animate-fade-in [animation-delay:500ms]">
-          <SearchBar />
+        {/* Scrolling ticker */}
+        <div className="mt-12 border-t border-primary-foreground/10 pt-6 animate-fade-in [animation-delay:600ms]">
+          <div className="flex items-center gap-8 overflow-hidden">
+            {["DEWALT", "Bosch", "Makita", "Milwaukee", "Klein Tools", "Stanley", "3M", "Ryobi"].map((brand, i) => (
+              <span key={i} className="text-primary-foreground/20 font-bold text-sm tracking-widest uppercase whitespace-nowrap">
+                {brand}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>
