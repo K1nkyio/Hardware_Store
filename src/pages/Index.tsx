@@ -296,64 +296,33 @@ export default function Index() {
         </section>
 
         {/* Categories Section */}
-        <section className="section bg-gradient-to-b from-muted/20 to-background relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-20 left-20 w-32 h-32 rounded-full bg-primary/20" />
-            <div className="absolute bottom-20 right-20 w-24 h-24 rounded-full bg-primary/10" />
-            <div className="absolute top-1/2 left-1/3 w-16 h-16 rounded-full bg-primary/15" />
-          </div>
-          
-          <div className="container relative">
-            <div className="text-center max-w-4xl mx-auto mb-16 animate-fade-in">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Settings className="h-4 w-4" />
-                {t.home.categories.subtitle}
+        <section className="section bg-background relative">
+          <div className="container">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 animate-fade-in">
+              <div className="max-w-xl">
+                <span className="text-sm text-primary font-semibold uppercase tracking-widest">
+                  {t.home.categories.subtitle}
+                </span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mt-3 leading-tight">
+                  {t.home.categories.title}
+                </h2>
+                <p className="text-muted-foreground mt-3 text-lg">
+                  {t.home.categories.description}
+                </p>
               </div>
-              
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                {t.home.categories.title}
-              </h2>
-              
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {t.home.categories.description}
-              </p>
-            </div>
-            
-            {/* Stats Banner */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 animate-fade-in [animation-delay:200ms]">
-              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">1000+</div>
-                <div className="text-sm text-muted-foreground">Products</div>
-              </div>
-              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">50+</div>
-                <div className="text-sm text-muted-foreground">Brands</div>
-              </div>
-              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">24/7</div>
-                <div className="text-sm text-muted-foreground">Support</div>
-              </div>
-              <div className="text-center p-4 rounded-2xl bg-card/50 backdrop-blur-sm border">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">99%</div>
-                <div className="text-sm text-muted-foreground">Satisfaction</div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {categories.map((category, index) => (
-                <div key={index} className="animate-fade-in hover-scale" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
-                  <CategoryCard {...category} />
-                </div>
-              ))}
-            </div>
-            
-            <div className="text-center mt-16">
-              <Button asChild size="lg" className="btn-primary">
+              <Button asChild size="lg" className="btn-primary shrink-0 self-start md:self-auto">
                 <Link to="/products">
                   {t.home.categories.viewAll} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {categories.map((category, index) => (
+                <div key={index} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                  <CategoryCard {...category} />
+                </div>
+              ))}
             </div>
           </div>
         </section>
