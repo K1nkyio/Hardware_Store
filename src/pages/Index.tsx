@@ -296,30 +296,39 @@ export default function Index() {
         </section>
 
         {/* Categories Section */}
-        <section className="section bg-background relative">
-          <div className="container">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 animate-fade-in">
+        <section className="section-sm bg-foreground relative overflow-hidden">
+          {/* Subtle grid */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: 'repeating-linear-gradient(0deg, white 0px, transparent 1px, transparent 80px), repeating-linear-gradient(90deg, white 0px, transparent 1px, transparent 80px)'
+          }} />
+          <div className="container relative">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 animate-fade-in">
               <div className="max-w-xl">
-                <span className="text-sm text-primary font-semibold uppercase tracking-widest">
+                <span className="text-xs text-primary font-bold uppercase tracking-[0.2em]">
                   {t.home.categories.subtitle}
                 </span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mt-3 leading-tight">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mt-3 leading-[0.95] text-primary-foreground tracking-tight">
                   {t.home.categories.title}
                 </h2>
-                <p className="text-muted-foreground mt-3 text-lg">
+                <p className="text-primary-foreground/40 mt-3 text-base">
                   {t.home.categories.description}
                 </p>
               </div>
-              <Button asChild size="lg" className="btn-primary shrink-0 self-start md:self-auto">
+              <Button asChild size="lg" className="bg-primary text-primary-foreground rounded-full px-8 font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.02] transition-all shrink-0 self-start md:self-auto">
                 <Link to="/products">
                   {t.home.categories.viewAll} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Bento-style grid: first two larger, rest smaller */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[200px]">
               {categories.map((category, index) => (
-                <div key={index} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                <div 
+                  key={index} 
+                  className={`animate-fade-in ${index < 2 ? 'lg:col-span-2 lg:row-span-1' : ''}`} 
+                  style={{ animationDelay: `${(index + 1) * 80}ms` }}
+                >
                   <CategoryCard {...category} />
                 </div>
               ))}
@@ -328,67 +337,65 @@ export default function Index() {
         </section>
         
         {/* Featured Products */}
-        <section className="section">
+        <section className="section bg-background relative">
           <div className="container">
-            <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
-              <span className="text-sm text-primary font-medium uppercase tracking-wider">
-                {t.home.featuredProducts.subtitle}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-                {t.home.featuredProducts.title}
-              </h2>
-              <p className="text-muted-foreground">
-                {t.home.featuredProducts.description}
-              </p>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 animate-fade-in">
+              <div>
+                <span className="text-xs text-primary font-bold uppercase tracking-[0.2em]">
+                  {t.home.featuredProducts.subtitle}
+                </span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mt-3 leading-[0.95] tracking-tight">
+                  {t.home.featuredProducts.title}
+                </h2>
+                <p className="text-muted-foreground mt-3 text-base max-w-lg">
+                  {t.home.featuredProducts.description}
+                </p>
+              </div>
+              <Button asChild className="btn-primary rounded-full px-8 shrink-0 self-start md:self-auto">
+                <Link to="/products">
+                  {t.home.featuredProducts.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredProducts.map((product, index) => (
                 <div key={product.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
                   <ProductCard product={product} />
                 </div>
               ))}
             </div>
-            
-            <div className="text-center mt-12">
-              <Button asChild className="btn-primary">
-                <Link to="/products">
-                  {t.home.featuredProducts.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </section>
 
         {/* Project Guides */}
-        <section className="section bg-muted/30">
+        <section className="section bg-muted/30 relative">
           <div className="container">
-            <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
-              <span className="text-sm text-primary font-medium uppercase tracking-wider">
-                {t.home.projectGuides.subtitle}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-                {t.home.projectGuides.title}
-              </h2>
-              <p className="text-muted-foreground">
-                {t.home.projectGuides.description}
-              </p>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 animate-fade-in">
+              <div>
+                <span className="text-xs text-primary font-bold uppercase tracking-[0.2em]">
+                  {t.home.projectGuides.subtitle}
+                </span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mt-3 leading-[0.95] tracking-tight">
+                  {t.home.projectGuides.title}
+                </h2>
+                <p className="text-muted-foreground mt-3 text-base max-w-lg">
+                  {t.home.projectGuides.description}
+                </p>
+              </div>
+              <Button asChild className="btn-primary rounded-full px-8 shrink-0 self-start md:self-auto">
+                <Link to="/projects">
+                  {t.home.projectGuides.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projectGuides.map((project, index) => (
                 <div key={project.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
                   <ProjectGuideCard project={project} />
                 </div>
               ))}
-            </div>
-            
-            <div className="text-center mt-12">
-              <Button asChild className="btn-primary">
-                <Link to="/projects">
-                  {t.home.projectGuides.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
             </div>
           </div>
         </section>
