@@ -1,0 +1,18 @@
+import { Router } from "express";
+import { login, logout, me, mfaActivate, mfaRegenerateRecoveryCodes, mfaReset, mfaSetup, refresh, register, requestPasswordReset, resetPassword, revokeSession, seed, sessions, } from "./admin.controller";
+import { requireAdmin, requirePermission, requireRole } from "../auth/auth.middleware";
+export const adminAuthRouter = Router();
+adminAuthRouter.post("/seed-super-admin", seed);
+adminAuthRouter.post("/register", requireRole("super_admin"), register);
+adminAuthRouter.post("/login", login);
+adminAuthRouter.post("/refresh", refresh);
+adminAuthRouter.post("/logout", requireAdmin({ allowMfaPending: true }), logout);
+adminAuthRouter.get("/me", requireAdmin({ allowMfaPending: true }), me);
+adminAuthRouter.get("/sessions", requireAdmin({ allowMfaPending: true }), sessions);
+adminAuthRouter.delete("/sessions/:sessionId", requireAdmin({ allowMfaPending: true }), revokeSession);
+adminAuthRouter.post("/mfa/setup", requireAdmin({ allowMfaPending: true }), mfaSetup);
+adminAuthRouter.post("/mfa/activate", requireAdmin({ allowMfaPending: true }), mfaActivate);
+adminAuthRouter.post("/mfa/recovery-codes/regenerate", requireRole("viewer"), mfaRegenerateRecoveryCodes);
+adminAuthRouter.post("/mfa/reset", requirePermission("mfa.reset"), mfaReset);
+adminAuthRouter.post("/request-password-reset", requestPasswordReset);
+adminAuthRouter.post("/reset-password", resetPassword);
