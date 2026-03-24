@@ -37,6 +37,10 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   name text NOT NULL,
   phone text,
   address text,
+  account_type text NOT NULL DEFAULT 'customer',
+  company_name text,
+  company_role text,
+  tax_id text,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -232,6 +236,124 @@ CREATE INDEX IF NOT EXISTS idx_products_material ON products(material);
 CREATE INDEX IF NOT EXISTS idx_products_voltage ON products(voltage);
 CREATE INDEX IF NOT EXISTS idx_products_finish ON products(finish);
 
+CREATE TABLE IF NOT EXISTS promo_codes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  code text NOT NULL UNIQUE,
+  description text,
+  discount_type text NOT NULL CHECK (discount_type IN ('percent', 'fixed')),
+  discount_value integer NOT NULL,
+  minimum_subtotal_cents integer NOT NULL DEFAULT 0,
+  max_discount_cents integer,
+  starts_at timestamptz,
+  ends_at timestamptz,
+  usage_limit integer,
+  per_user_limit integer NOT NULL DEFAULT 1,
+  eligible_account_type text,
+  is_active boolean NOT NULL DEFAULT true,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_promo_codes_active ON promo_codes(is_active);
+CREATE INDEX IF NOT EXISTS idx_promo_codes_window ON promo_codes(starts_at, ends_at);
+
+CREATE TABLE IF NOT EXISTS promo_code_redemptions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  promo_code_id uuid NOT NULL REFERENCES promo_codes(id) ON DELETE CASCADE,
+  user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+  order_id uuid REFERENCES orders(id) ON DELETE SET NULL,
+  redeemed_code text NOT NULL,
+  discount_cents integer NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_promo_code_redemptions_code_id ON promo_code_redemptions(promo_code_id);
+CREATE INDEX IF NOT EXISTS idx_promo_code_redemptions_user_id ON promo_code_redemptions(user_id);
+
+CREATE TABLE IF NOT EXISTS user_wishlist (
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, product_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_wishlist_product_id ON user_wishlist(product_id);
+
+CREATE TABLE IF NOT EXISTS product_search_aliases (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  alias text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_search_aliases_product_id ON product_search_aliases(product_id);
+CREATE INDEX IF NOT EXISTS idx_product_search_aliases_alias ON product_search_aliases ((lower(alias)));
+
+CREATE TABLE IF NOT EXISTS branch_locations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug text NOT NULL UNIQUE,
+  name text NOT NULL,
+  city text NOT NULL,
+  address text NOT NULL,
+  phone text,
+  pickup_enabled boolean NOT NULL DEFAULT true,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS product_branch_inventory (
+  product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  branch_id uuid NOT NULL REFERENCES branch_locations(id) ON DELETE CASCADE,
+  stock integer NOT NULL DEFAULT 0,
+  pickup_eta text,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (product_id, branch_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_branch_inventory_branch_id ON product_branch_inventory(branch_id);
+
+CREATE TABLE IF NOT EXISTS product_bulk_pricing (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  min_quantity integer NOT NULL CHECK (min_quantity > 0),
+  price_cents integer NOT NULL CHECK (price_cents >= 0),
+  label text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_bulk_pricing_product_id ON product_bulk_pricing(product_id);
+
+CREATE TABLE IF NOT EXISTS product_bundles (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  bundled_product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  bundle_price_cents integer,
+  label text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_bundles_product_id ON product_bundles(product_id);
+
+CREATE TABLE IF NOT EXISTS quote_requests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id uuid REFERENCES products(id) ON DELETE SET NULL,
+  branch_id uuid REFERENCES branch_locations(id) ON DELETE SET NULL,
+  customer_name text NOT NULL,
+  customer_email text NOT NULL,
+  customer_phone text,
+  company_name text,
+  account_type text NOT NULL DEFAULT 'customer',
+  quantity integer NOT NULL DEFAULT 1,
+  notes text,
+  status text NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted', 'reviewing', 'quoted', 'won', 'lost')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_quote_requests_status ON quote_requests(status);
+CREATE INDEX IF NOT EXISTS idx_quote_requests_created_at ON quote_requests(created_at DESC);
+
 CREATE TABLE IF NOT EXISTS orders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   customer_email text NOT NULL,
@@ -251,6 +373,8 @@ CREATE TABLE IF NOT EXISTS orders (
   shipping_method text,
   shipping_address jsonb,
   billing_address jsonb,
+  promo_code text,
+  discount_cents integer NOT NULL DEFAULT 0,
   notes text,
   tags text[] NOT NULL DEFAULT '{}',
   sla_due_at timestamptz,
@@ -471,7 +595,13 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_provider text;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_reference text;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_status text NOT NULL DEFAULT 'pending';
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_metadata jsonb;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS promo_code text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_cents integer NOT NULL DEFAULT 0;
 CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS account_type text NOT NULL DEFAULT 'customer';
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS company_name text;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS company_role text;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS tax_id text;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name text;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'customer';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_domain text NOT NULL DEFAULT 'customer';
@@ -593,3 +723,58 @@ DROP TRIGGER IF EXISTS trg_customer_inquiries_updated_at ON customer_inquiries;
 CREATE TRIGGER trg_customer_inquiries_updated_at
 BEFORE UPDATE ON customer_inquiries
 FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_user_profiles_updated_at ON user_profiles;
+CREATE TRIGGER trg_user_profiles_updated_at
+BEFORE UPDATE ON user_profiles
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_payment_methods_updated_at ON payment_methods;
+CREATE TRIGGER trg_payment_methods_updated_at
+BEFORE UPDATE ON payment_methods
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_promo_codes_updated_at ON promo_codes;
+CREATE TRIGGER trg_promo_codes_updated_at
+BEFORE UPDATE ON promo_codes
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_branch_locations_updated_at ON branch_locations;
+CREATE TRIGGER trg_branch_locations_updated_at
+BEFORE UPDATE ON branch_locations
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_product_bulk_pricing_updated_at ON product_bulk_pricing;
+CREATE TRIGGER trg_product_bulk_pricing_updated_at
+BEFORE UPDATE ON product_bulk_pricing
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_quote_requests_updated_at ON quote_requests;
+CREATE TRIGGER trg_quote_requests_updated_at
+BEFORE UPDATE ON quote_requests
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+INSERT INTO branch_locations (slug, name, city, address, phone, pickup_enabled)
+VALUES
+  ('nairobi-westlands', 'Westlands Trade Counter', 'Nairobi', 'Westlands Commercial Centre, Nairobi', '+254 700 000 101', true),
+  ('industrial-area', 'Industrial Area Depot', 'Nairobi', 'Enterprise Road, Industrial Area, Nairobi', '+254 700 000 102', true),
+  ('mombasa-port', 'Mombasa Port Yard', 'Mombasa', 'Shimanzi Logistics Park, Mombasa', '+254 700 000 103', true)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO promo_codes (
+  code,
+  description,
+  discount_type,
+  discount_value,
+  minimum_subtotal_cents,
+  max_discount_cents,
+  usage_limit,
+  per_user_limit,
+  eligible_account_type,
+  is_active
+)
+VALUES
+  ('WELCOME5', '5% off first orders above KES 2,500', 'percent', 5, 250000, 50000, 500, 1, NULL, true),
+  ('TRADE12', '12% trade discount for contractor and company accounts', 'percent', 12, 1000000, 300000, NULL, 10, 'contractor', true),
+  ('BULK1500', 'KES 1,500 off qualifying bulk orders', 'fixed', 150000, 3500000, NULL, NULL, 5, NULL, true)
+ON CONFLICT (code) DO NOTHING;

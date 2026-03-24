@@ -66,7 +66,10 @@ function statusForError(err: unknown): number {
 export async function register(req: Request, res: Response, next: (err?: unknown) => void) {
   try {
     const body = RegisterSchema.parse(req.body);
-    const result = await registerCustomer(body);
+    const result = await registerCustomer({
+      ...body,
+      fullName: body.fullName ?? body.username,
+    });
     return res.status(201).json({
       user: result.user,
       verificationRequired: true,

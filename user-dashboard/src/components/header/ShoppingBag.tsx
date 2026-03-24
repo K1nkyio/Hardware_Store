@@ -1,9 +1,10 @@
 import { X, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartItem } from "@/context/cart";
 import { formatProductPrice } from "@/lib/api";
 import ResponsiveImage from "@/components/common/ResponsiveImage";
+import { useState } from "react";
 
 interface ShoppingBagProps {
   isOpen: boolean;
@@ -24,6 +25,8 @@ const ShoppingBag = ({
   onViewFavorites,
   isReady = true,
 }: ShoppingBagProps) => {
+  const navigate = useNavigate();
+  const [skuQuery, setSkuQuery] = useState("");
   if (!isOpen) return null;
   const backorderLimit = 10;
 
@@ -92,12 +95,33 @@ const ShoppingBag = ({
               ))}
             </div>
           ) : cartItems.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <p className="text-muted-foreground text-sm text-center">
                 Your shopping bag is empty.
                 <br />
-                Continue shopping to add items to your bag.
+                Continue shopping to add project-ready items.
               </p>
+              <div className="w-full border border-border p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Quick Reorder By SKU</p>
+                <div className="mt-3 flex gap-2">
+                  <input
+                    value={skuQuery}
+                    onChange={(e) => setSkuQuery(e.target.value)}
+                    placeholder="Enter SKU"
+                    className="flex-1 border border-border bg-transparent px-3 py-2 text-sm"
+                  />
+                  <Button
+                    className="rounded-none"
+                    onClick={() => {
+                      if (!skuQuery.trim()) return;
+                      onClose();
+                      navigate(`/category/shop?q=${encodeURIComponent(skuQuery.trim())}`);
+                    }}
+                  >
+                    Find
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : (
             <>
@@ -163,6 +187,28 @@ const ShoppingBag = ({
 
               {/* Subtotal and checkout */}
               <div className="border-t border-border pt-6 space-y-4">
+                <div className="border border-border p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Reorder By SKU</p>
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      value={skuQuery}
+                      onChange={(e) => setSkuQuery(e.target.value)}
+                      placeholder="Paste SKU or alias"
+                      className="flex-1 border border-border bg-transparent px-3 py-2 text-sm"
+                    />
+                    <Button
+                      variant="outline"
+                      className="rounded-none"
+                      onClick={() => {
+                        if (!skuQuery.trim()) return;
+                        onClose();
+                        navigate(`/category/shop?q=${encodeURIComponent(skuQuery.trim())}`);
+                      }}
+                    >
+                      Search
+                    </Button>
+                  </div>
+                </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-light text-foreground">Subtotal</span>
                   <span className="text-sm font-medium text-foreground">{formattedSubtotal}</span>

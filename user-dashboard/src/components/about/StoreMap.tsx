@@ -3,64 +3,56 @@ interface Store {
   address: string;
   phone: string;
   hours: string;
-  lat: number;
-  lng: number;
 }
 
 const stores: Store[] = [
   {
-    name: "LINEA Madison Avenue",
-    address: "789 Madison Avenue, New York, NY 10065",
-    phone: "+1 (212) 555-0123",
-    hours: "Mon-Sat: 10AM-8PM, Sun: 12PM-6PM",
-    lat: 40.7614,
-    lng: -73.9776
+    name: "Raph Supply Quezon City Hub",
+    address: "123 Hardware Avenue, Quezon City, Metro Manila",
+    phone: "+63 (2) 8555-0123",
+    hours: "Mon-Sat: 8AM-6PM",
   },
   {
-    name: "LINEA Beverly Hills", 
-    address: "456 Rodeo Drive, Beverly Hills, CA 90210",
-    phone: "+1 (310) 555-0456",
-    hours: "Mon-Sat: 10AM-8PM, Sun: 12PM-6PM",
-    lat: 34.0696,
-    lng: -118.4014
+    name: "Raph Supply Makati Trade Counter",
+    address: "48 Chino Roces Avenue, Makati City, Metro Manila",
+    phone: "+63 (2) 8555-0175",
+    hours: "Mon-Sat: 8AM-6PM",
   },
   {
-    name: "LINEA SoHo",
-    address: "123 Spring Street, New York, NY 10012", 
-    phone: "+1 (212) 555-0789",
-    hours: "Mon-Sat: 11AM-8PM, Sun: 12PM-7PM",
-    lat: 40.7253,
-    lng: -74.0022
-  }
+    name: "Raph Supply Pasig Fulfillment Point",
+    address: "205 C. Raymundo Avenue, Pasig City, Metro Manila",
+    phone: "+63 (2) 8555-0198",
+    hours: "Mon-Sat: 8AM-6PM",
+  },
 ];
 
 const StoreMap = () => {
   return (
-    <div className="w-full h-96 rounded-lg overflow-hidden border border-border bg-muted/10 relative">
-      {/* Static Map using Google Maps Embed API */}
+    <div className="relative h-96 w-full overflow-hidden rounded-lg border border-border bg-muted/10">
       <iframe
         title="Store locations map"
-        src="https://www.google.com/maps?q=40.7614,-73.9776&z=13&output=embed"
+        src="https://www.google.com/maps?q=14.5995,120.9842&z=11&output=embed"
         width="100%"
         height="100%"
         style={{ border: 0 }}
         allowFullScreen
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
-        className="w-full h-full"
+        className="h-full w-full"
       />
-      
-      {/* Overlay with store markers */}
-      <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm rounded-lg p-4 max-w-xs">
-        <h4 className="text-sm font-medium text-foreground mb-3">Our Locations</h4>
-        <div className="space-y-2">
-          {stores.map((store, index) => (
-            <div key={index} className="text-xs">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+
+      <div className="absolute left-4 top-4 max-w-xs rounded-lg bg-background/90 p-4 backdrop-blur-sm">
+        <h4 className="mb-3 text-sm font-medium text-foreground">Metro Manila Locations</h4>
+        <div className="space-y-3">
+          {stores.map((store) => (
+            <div key={store.name} className="text-xs">
+              <div className="mb-1 flex items-center gap-2">
+                <div className="h-2 w-2 flex-shrink-0 rounded-full bg-primary"></div>
                 <span className="font-medium text-foreground">{store.name}</span>
               </div>
-              <p className="text-muted-foreground ml-4">{store.address}</p>
+              <p className="ml-4 text-muted-foreground">{store.address}</p>
+              <p className="ml-4 text-muted-foreground">{store.phone}</p>
+              <p className="ml-4 text-muted-foreground">{store.hours}</p>
             </div>
           ))}
         </div>

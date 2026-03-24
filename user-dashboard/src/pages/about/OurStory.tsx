@@ -8,71 +8,75 @@ const OurStory = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="flex">
         <div className="hidden lg:block">
           <AboutSidebar />
         </div>
-        
+
         <main className="w-full flex-1 px-4 sm:px-5 lg:pl-2 lg:pr-6">
-          <PageHeader 
-            title="Our Story" 
-            subtitle="A journey of passion, craftsmanship, and timeless elegance"
+          <PageHeader
+            title="Our Story"
+            subtitle="From dependable essentials to trade-ready supply for every build and repair"
           />
-          
+
           <ContentSection>
             <div className="space-y-6">
-              <h3 className="text-2xl font-light text-foreground">Founded on Passion</h3>
+              <h3 className="text-2xl font-light text-foreground">Built around everyday jobsite needs</h3>
               <p className="text-muted-foreground leading-relaxed">
-                LINEA Jewelry was born from a shared vision of creating timeless pieces that transcend fleeting
-                trends. Our founders, united by their passion for exceptional craftsmanship and sustainable practices,
-                established the brand with a commitment to creating jewelry that tells a story - your story.
+                Raph Supply started with a practical goal: make reliable hardware easier to source without the usual
+                confusion, stock uncertainty, and fragmented buying process. We serve trade professionals and homeowners
+                who need dependable materials, clear product information, and a storefront that respects urgency.
               </p>
             </div>
           </ContentSection>
 
-          <ContentSection title="Our Heritage">
-            <div className="grid md:grid-cols-2 gap-12">
+          <ContentSection title="What Drives Us">
+            <div className="grid gap-12 md:grid-cols-2">
               <div className="space-y-6">
-                <h3 className="text-xl font-light text-foreground">Traditional Craftsmanship</h3>
+                <h3 className="text-xl font-light text-foreground">Trade-first selection</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Every piece in our collection is meticulously handcrafted by skilled artisans who have honed their craft over generations. We honor traditional techniques while embracing modern innovation, ensuring each piece meets our exacting standards for quality and beauty.
+                  Our assortment is shaped around real work: electrical fittings, plumbing supplies, paints, cleaning
+                  essentials, building materials, and safety gear that contractors, maintenance teams, and property
+                  managers actually use.
                 </p>
               </div>
               <div className="space-y-6">
-                <h3 className="text-xl font-light text-foreground">Sustainable Future</h3>
+                <h3 className="text-xl font-light text-foreground">Modern supply experience</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  We believe luxury and sustainability can coexist beautifully. Our commitment to ethical sourcing, recycled materials, and responsible manufacturing practices ensures that every piece you wear contributes to a more sustainable future.
+                  We combine the reliability of a neighborhood hardware supplier with a cleaner digital experience:
+                  faster discovery, better product visibility, straightforward checkout, and support that understands
+                  the realities of repair and installation work.
                 </p>
               </div>
             </div>
           </ContentSection>
 
           <ContentSection title="Our Values">
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-3">
               <div className="space-y-4">
-                <h3 className="text-lg font-light text-foreground">Excellence</h3>
+                <h3 className="text-lg font-light text-foreground">Reliability</h3>
                 <p className="text-muted-foreground">
-                  We pursue perfection in every detail, from the initial design concept to the final polish.
+                  We focus on dependable stock, honest availability, and practical product information.
                 </p>
               </div>
               <div className="space-y-4">
-                <h3 className="text-lg font-light text-foreground">Authenticity</h3>
+                <h3 className="text-lg font-light text-foreground">Clarity</h3>
                 <p className="text-muted-foreground">
-                  Each piece reflects genuine craftsmanship and tells an authentic story of artistry and care.
+                  Buyers should be able to understand what they are purchasing without decoding vague marketing copy.
                 </p>
               </div>
               <div className="space-y-4">
-                <h3 className="text-lg font-light text-foreground">Innovation</h3>
+                <h3 className="text-lg font-light text-foreground">Improvement</h3>
                 <p className="text-muted-foreground">
-                  We continuously evolve our designs and techniques while honoring timeless aesthetic principles.
+                  We keep refining the store so buying hardware feels faster, easier, and more trustworthy over time.
                 </p>
               </div>
             </div>
           </ContentSection>
         </main>
       </div>
-      
+
       <Footer />
     </div>
   );

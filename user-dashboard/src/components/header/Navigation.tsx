@@ -1,11 +1,16 @@
-import { ArrowRight, X, Minus, Plus, LogOut, User, ChevronRight, ChevronDown, ShoppingBag, Package, Home, Info, Zap, Shield, PaintBucket, Hammer } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ArrowRight, X, LogOut, User, ChevronRight, ChevronDown, Package, Home, Info, Search, Heart, Scale } from "lucide-react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ShoppingBagComponent from "./ShoppingBag";
 import { useAuth } from "@/context/auth";
 import { useCart } from "@/context/cart";
+import { useWishlist } from "@/context/wishlist";
+import { useCompare } from "@/context/compare";
+import { editorial, fiftyFifty, homeShowcase } from "@/lib/homeImages";
+import { getProductSearchSuggestions, type ProductSearchSuggestion } from "@/lib/api";
+import { productPath } from "@/lib/urls";
+import { trackEvent } from "@/lib/analytics";
 
 const Navigation = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -14,9 +19,15 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isShoppingBagOpen, setIsShoppingBagOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['Shop'])); // Default Shop expanded
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchSuggestions, setSearchSuggestions] = useState<ProductSearchSuggestion[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const { currentUser, logout } = useAuth();
   const { items, totalItems, updateQuantity, removeItem, isReady } = useCart();
+  const { items: wishlistItems, isWishlisted } = useWishlist();
+  const { items: compareItems } = useCompare();
   const navigate = useNavigate();
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   const handleLogout = async () => {
     try {
@@ -30,13 +41,53 @@ const Navigation = () => {
   };
 
   const popularSearches = [
-    "Electrical Supplies",
-    "Safety Equipment",
-    "Paint & Tools",
-    "Plumbing Fixtures",
-    "Building Materials",
-    "Cleaning Supplies"
+    "Cable clips",
+    "PVC fittings",
+    "Safety gloves",
+    "Paint rollers",
+    "Cement and mortar",
+    "Circuit breakers"
   ];
+
+  useEffect(() => {
+    let active = true;
+    if (!isSearchOpen) return;
+
+    const run = async () => {
+      setSearchLoading(true);
+      try {
+        const suggestions = await getProductSearchSuggestions(deferredSearchQuery);
+        if (active) setSearchSuggestions(suggestions);
+      } catch {
+        if (active) setSearchSuggestions([]);
+      } finally {
+        if (active) setSearchLoading(false);
+      }
+    };
+
+    void run();
+    return () => {
+      active = false;
+    };
+  }, [deferredSearchQuery, isSearchOpen]);
+
+  const handleSearchSelect = (entry: ProductSearchSuggestion | string) => {
+    if (typeof entry === "string") {
+      navigate(`/category/shop?q=${encodeURIComponent(entry)}`);
+      setSearchQuery(entry);
+      setIsSearchOpen(false);
+      trackEvent("search_submit", { query: entry, source: "navigation" }, currentUser?.email);
+      return;
+    }
+
+    if (entry.productId) {
+      navigate(productPath(entry.productId, entry.label));
+      trackEvent("search_select", { query: searchQuery, productId: entry.productId, type: entry.type }, currentUser?.email);
+    } else {
+      navigate(`/category/shop?q=${encodeURIComponent(entry.label)}`);
+    }
+    setIsSearchOpen(false);
+  };
   
   const navItems = [
     { 
@@ -59,8 +110,8 @@ const Navigation = () => {
         "Plumbing"
       ],
       images: [
-        { src: "/placeholder.svg", alt: "Electrical & Lighting Collection", label: "Electrical & Lighting" },
-        { src: "/placeholder.svg", alt: "Plumbing Collection", label: "Plumbing" }
+        { src: fiftyFifty.electrical, alt: "Electrical and lighting supplies", label: "Electrical & Lighting" },
+        { src: homeShowcase.fittings, alt: "Plumbing fittings and connectors", label: "Plumbing" }
       ]
     },
     { 
@@ -73,7 +124,7 @@ const Navigation = () => {
         "Store Locator"
       ],
       images: [
-        { src: "/placeholder.svg", alt: "About Raph", label: "Read our story" }
+        { src: editorial, alt: "Raph Supply warehouse and support team", label: "Read our story" }
       ]
     }
   ];
@@ -174,18 +225,31 @@ const Navigation = () => {
             aria-label="Search"
             onClick={() => setIsSearchOpen(!isSearchOpen)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
+            <Search className="w-5 h-5" />
           </button>
+          <Link
+            to="/compare"
+            className="hidden lg:inline-flex p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
+            aria-label="Compare products"
+          >
+            <Scale className="w-5 h-5" />
+            {compareItems.length > 0 && (
+              <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] text-background">
+                {compareItems.length}
+              </span>
+            )}
+          </Link>
           <button 
-            className="hidden lg:block p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
+            className="hidden lg:block p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
             aria-label="Favorites"
             onClick={() => setOffCanvasType('favorites')}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-            </svg>
+            <Heart className={`w-5 h-5 ${wishlistItems.length > 0 ? "fill-current" : ""}`} />
+            {wishlistItems.length > 0 && (
+              <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] text-background">
+                {wishlistItems.length}
+              </span>
+            )}
           </button>
           <button 
             className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
@@ -264,29 +328,92 @@ const Navigation = () => {
             <div className="max-w-2xl mx-auto">
               <div className="relative mb-8">
                 <div className="flex items-center border-b border-border pb-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 text-nav-foreground mr-3">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                  </svg>
+                  <Search className="w-5 h-5 text-nav-foreground mr-3" />
                   <input
                     type="text"
-                    placeholder="Search for plumbing supplies..."
+                    placeholder="Search tools, fittings, paint, or safety gear..."
                     className="flex-1 bg-transparent text-nav-foreground placeholder:text-nav-foreground/60 outline-none text-lg"
                     autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && searchQuery.trim()) {
+                        handleSearchSelect(searchQuery.trim());
+                      }
+                    }}
                   />
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-nav-foreground text-sm font-light mb-4">Popular Searches</h3>
-                <div className="flex flex-wrap gap-3">
-                  {popularSearches.map((search, index) => (
-                    <button
-                      key={index}
-                      className="text-nav-foreground hover:text-nav-hover text-sm font-light py-2 px-4 border border-border rounded-full transition-colors duration-200 hover:border-nav-hover"
-                    >
-                      {search}
-                    </button>
-                  ))}
+              <div className="grid gap-8 lg:grid-cols-[1.35fr,0.65fr]">
+                <div>
+                  <h3 className="text-nav-foreground text-sm font-light mb-4">
+                    {searchQuery.trim() ? "Predictive Results" : "Popular Searches"}
+                  </h3>
+                  <div className="space-y-2">
+                    {(searchQuery.trim() ? searchSuggestions : popularSearches.map((label) => ({ label, type: "popular" as const }))).map((entry, index) => (
+                      <button
+                        key={`${entry.label}-${index}`}
+                        className="flex w-full items-center gap-3 border border-border/40 px-4 py-3 text-left text-sm text-nav-foreground transition-colors duration-200 hover:border-nav-hover hover:text-nav-hover"
+                        onClick={() => handleSearchSelect(entry)}
+                      >
+                        {"productId" in entry && entry.imageUrl ? (
+                          <img src={entry.imageUrl} alt={entry.label} className="h-12 w-12 object-cover" />
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center bg-muted/30">
+                            <Search className="h-4 w-4" />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate">{entry.label}</p>
+                          {"highlight" in entry && entry.highlight ? (
+                            <p className="truncate text-xs text-nav-foreground/60">{entry.highlight}</p>
+                          ) : null}
+                        </div>
+                        <span className="text-[11px] uppercase tracking-wide text-nav-foreground/50">
+                          {"type" in entry ? entry.type : "popular"}
+                        </span>
+                      </button>
+                    ))}
+                    {searchLoading && (
+                      <p className="text-sm text-nav-foreground/60">Searching live catalog…</p>
+                    )}
+                    {!searchLoading && searchQuery.trim() && searchSuggestions.length === 0 && (
+                      <div className="border border-dashed border-border/50 px-4 py-5 text-sm text-nav-foreground/70">
+                        No direct matches yet. Try SKU fragments, product families, or compatibility terms.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="border border-border/40 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-nav-foreground/60">Smart Shortcuts</p>
+                    <div className="mt-4 space-y-3 text-sm text-nav-foreground/80">
+                      <Link to="/compare" onClick={() => setIsSearchOpen(false)} className="flex items-center justify-between hover:text-nav-hover">
+                        <span>Open product comparison</span>
+                        <span>{compareItems.length}</span>
+                      </Link>
+                      <button onClick={() => { setOffCanvasType("favorites"); setIsSearchOpen(false); }} className="flex w-full items-center justify-between hover:text-nav-hover">
+                        <span>Open saved favorites</span>
+                        <span>{wishlistItems.length}</span>
+                      </button>
+                      <Link to="/category/shop?sort=newest" onClick={() => setIsSearchOpen(false)} className="flex items-center justify-between hover:text-nav-hover">
+                        <span>See new arrivals</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="border border-border/40 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-nav-foreground/60">Search With</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {["SKU", "Compatibility", "Branch pickup", "Bundle"].map((pill) => (
+                        <span key={pill} className="border border-border/40 px-3 py-1 text-xs text-nav-foreground/70">
+                          {pill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -431,10 +558,31 @@ const Navigation = () => {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6">
-              <p className="text-muted-foreground text-sm mb-6">
-                You haven't added any favorites yet. Browse our catalog and save items for quick reordering.
-              </p>
+            <div className="flex-1 overflow-y-auto p-6">
+              {wishlistItems.length === 0 ? (
+                <p className="text-muted-foreground text-sm mb-6">
+                  You haven't added any favorites yet. Save products here for quick reordering and project planning.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {wishlistItems.map((item) => (
+                    <Link
+                      key={item.productId}
+                      to={productPath(item.productId, item.name)}
+                      onClick={() => setOffCanvasType(null)}
+                      className="flex items-center gap-3 border border-border p-3 transition-colors hover:border-foreground"
+                    >
+                      <img src={item.imageUrl || "/placeholder.svg"} alt={item.name} className="h-16 w-16 object-cover" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">{item.category} • {item.sku || "No SKU"}</p>
+                        <p className="text-sm text-foreground">{item.currency} {(item.priceCents / 100).toFixed(2)}</p>
+                      </div>
+                      {isWishlisted(item.productId) && <Heart className="h-4 w-4 fill-current text-foreground" />}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

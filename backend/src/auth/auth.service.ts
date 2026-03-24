@@ -25,6 +25,10 @@ export type CustomerAuthUser = {
   status: string;
   phone?: string;
   address?: string;
+  accountType?: "customer" | "contractor" | "company";
+  companyName?: string;
+  companyRole?: string;
+  taxId?: string;
 };
 
 export type AdminAuthUser = {
@@ -253,6 +257,11 @@ function mapCustomerRow(row: Record<string, unknown>): CustomerAuthUser {
     status,
     phone: row.phone ? String(row.phone) : undefined,
     address: row.address ? String(row.address) : undefined,
+    accountType:
+      row.account_type === "contractor" || row.account_type === "company" ? row.account_type : "customer",
+    companyName: row.company_name ? String(row.company_name) : undefined,
+    companyRole: row.company_role ? String(row.company_role) : undefined,
+    taxId: row.tax_id ? String(row.tax_id) : undefined,
   };
 }
 
@@ -260,6 +269,7 @@ async function getCustomerByEmail(email: string): Promise<CustomerWithSecrets | 
   const { rows } = await pool.query(
     `SELECT
       u.id, u.email, u.username, u.password_hash, u.full_name, up.name AS profile_name, up.phone, up.address,
+      up.account_type, up.company_name, up.company_role, up.tax_id,
       u.status, u.is_active, u.email_verified, u.email_verified_at::text, u.locked_until::text
      FROM users u
      LEFT JOIN user_profiles up ON up.user_id = u.id
@@ -280,6 +290,7 @@ export async function getCustomerProfile(userId: string): Promise<CustomerAuthUs
   const { rows } = await pool.query(
     `SELECT
       u.id, u.email, u.username, u.full_name, up.name AS profile_name, up.phone, up.address,
+      up.account_type, up.company_name, up.company_role, up.tax_id,
       u.status, u.is_active, u.email_verified, u.email_verified_at::text
      FROM users u
      LEFT JOIN user_profiles up ON up.user_id = u.id
@@ -412,6 +423,7 @@ export async function refreshCustomerSession(refreshToken: string): Promise<{
     `SELECT
       s.id, s.user_id, s.expires_at::text, s.revoked_at::text,
       u.id AS customer_id, u.email, u.full_name, up.name AS profile_name, up.phone, up.address,
+      up.account_type, up.company_name, up.company_role, up.tax_id,
       u.status, u.is_active, u.email_verified, u.email_verified_at::text
      FROM user_sessions s
      INNER JOIN users u ON u.id = s.user_id

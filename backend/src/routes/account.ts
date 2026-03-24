@@ -13,6 +13,10 @@ const ProfileUpdateSchema = z
     fullName: z.string().trim().min(1).max(120).optional(),
     phone: z.string().trim().optional(),
     address: z.string().trim().optional(),
+    accountType: z.enum(["customer", "contractor", "company"]).optional(),
+    companyName: z.string().trim().max(160).optional(),
+    companyRole: z.string().trim().max(120).optional(),
+    taxId: z.string().trim().max(80).optional(),
   })
   .refine((value) => Object.keys(value).length > 0, {
     message: "No profile fields provided",
@@ -63,6 +67,10 @@ const PaymentMethodPatchSchema = z
     message: "No payment fields provided",
   });
 
+const WishlistItemSchema = z.object({
+  productId: z.string().uuid(),
+});
+
 function normalizeOptionalString(value?: string): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -96,25 +104,103 @@ accountRouter.patch("/profile", requireAuth({ domain: "customer" }), async (req,
     }
 
     await pool.query(
-      `INSERT INTO user_profiles (user_id, name, phone, address)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO user_profiles (user_id, name, phone, address, account_type, company_name, company_role, tax_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        ON CONFLICT (user_id)
        DO UPDATE SET
          name = EXCLUDED.name,
          phone = COALESCE(EXCLUDED.phone, user_profiles.phone),
          address = COALESCE(EXCLUDED.address, user_profiles.address),
+         account_type = COALESCE(EXCLUDED.account_type, user_profiles.account_type),
+         company_name = COALESCE(EXCLUDED.company_name, user_profiles.company_name),
+         company_role = COALESCE(EXCLUDED.company_role, user_profiles.company_role),
+         tax_id = COALESCE(EXCLUDED.tax_id, user_profiles.tax_id),
          updated_at = now()`,
       [
         actor.id,
         updatedFullName,
         normalizeOptionalString(body.phone),
         normalizeOptionalString(body.address),
+        body.accountType ?? null,
+        normalizeOptionalString(body.companyName),
+        normalizeOptionalString(body.companyRole),
+        normalizeOptionalString(body.taxId),
       ]
     );
 
     const user = await getCustomerProfile(actor.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+accountRouter.get("/wishlist", requireAuth({ domain: "customer" }), async (req, res, next) => {
+  try {
+    const actor = getActor(req);
+    const { rows } = await pool.query(
+      `SELECT
+        p.id::text,
+        p.name,
+        COALESCE(p.sku, '') AS sku,
+        COALESCE(p.category, '') AS category,
+        p.price_cents,
+        p.currency,
+        p.stock,
+        COALESCE(p.image_url, '') AS image_url,
+        p.created_at::text
+      FROM user_wishlist uw
+      INNER JOIN products p ON p.id = uw.product_id
+      WHERE uw.user_id = $1
+      ORDER BY uw.created_at DESC`,
+      [actor.id]
+    );
+
+    return res.json({
+      items: rows.map((row) => ({
+        productId: row.id,
+        name: row.name,
+        sku: row.sku,
+        category: row.category,
+        priceCents: Number(row.price_cents),
+        currency: row.currency,
+        stock: Number(row.stock),
+        imageUrl: row.image_url,
+        createdAt: row.created_at,
+      })),
+    });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+accountRouter.post("/wishlist", requireAuth({ domain: "customer" }), async (req, res, next) => {
+  try {
+    const actor = getActor(req);
+    const body = WishlistItemSchema.parse(req.body ?? {});
+    const exists = await pool.query("SELECT 1 FROM products WHERE id = $1", [body.productId]);
+    if (exists.rowCount === 0) return res.status(404).json({ message: "Product not found" });
+
+    await pool.query(
+      `INSERT INTO user_wishlist (user_id, product_id)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id, product_id) DO NOTHING`,
+      [actor.id, body.productId]
+    );
+
+    return res.status(201).json({ ok: true });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+accountRouter.delete("/wishlist/:productId", requireAuth({ domain: "customer" }), async (req, res, next) => {
+  try {
+    const actor = getActor(req);
+    const productId = req.params.productId;
+    await pool.query("DELETE FROM user_wishlist WHERE user_id = $1 AND product_id = $2", [actor.id, productId]);
+    return res.status(204).send();
   } catch (err) {
     return next(err);
   }

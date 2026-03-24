@@ -49,6 +49,10 @@ const Account = () => {
     fullName: "",
     email: "",
     phone: "",
+    accountType: "customer",
+    companyName: "",
+    companyRole: "",
+    taxId: "",
   });
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -92,6 +96,10 @@ const Account = () => {
         fullName: currentUser.fullName || "",
         email: currentUser.email || "",
         phone: currentUser.phone || "",
+        accountType: currentUser.accountType || "customer",
+        companyName: currentUser.companyName || "",
+        companyRole: currentUser.companyRole || "",
+        taxId: currentUser.taxId || "",
       });
     }
   }, [currentUser]);
@@ -156,6 +164,10 @@ const Account = () => {
       const payload = {
         fullName: formData.fullName.trim(),
         phone: formData.phone.trim() || undefined,
+        accountType: formData.accountType as "customer" | "contractor" | "company",
+        companyName: formData.companyName.trim() || undefined,
+        companyRole: formData.companyRole.trim() || undefined,
+        taxId: formData.taxId.trim() || undefined,
       };
       await updateAccountProfile(payload);
       await refreshProfile();
@@ -312,6 +324,8 @@ const Account = () => {
     }
   };
 
+  const toTitleCase = (value: string) => value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -330,26 +344,53 @@ const Account = () => {
     );
   }
 
+  const initials =
+    currentUser.fullName
+      ?.split(" ")
+      .map((name) => name[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "U";
+
+  const profileHighlights = [
+    {
+      label: "Email",
+      value: currentUser.email,
+      hint: "Used for sign in and order updates",
+      icon: Mail,
+    },
+    {
+      label: "Phone",
+      value: currentUser.phone || "Add a phone number",
+      hint: "Helpful for delivery coordination",
+      icon: Phone,
+    },
+    {
+      label: "Username",
+      value: `@${currentUser.username}`,
+      hint: "Public account handle",
+      icon: User,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="bg-background border-b border-border/60">
+    <div className="min-h-screen bg-gradient-to-b from-muted/20 via-background to-background">
+      <div className="border-b border-border/60 bg-background/95 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="w-full rounded-full sm:w-auto">
                 Back
               </Button>
-              <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border border-border/60">
-                <AvatarImage src="" />
-                <AvatarFallback>
-                  {currentUser.fullName?.split(" ").map((n) => n[0]).join("").toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <h1 className="text-base sm:text-lg font-semibold text-foreground truncate">
-                  {currentUser.fullName}
-                </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">{currentUser.email}</p>
+              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-3 py-3 shadow-sm sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+                <Avatar className="h-11 w-11 border border-border/60">
+                  <AvatarImage src="" />
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <h1 className="text-base font-semibold text-foreground truncate sm:text-lg">{currentUser.fullName}</h1>
+                  <p className="text-xs text-muted-foreground truncate sm:text-sm">{currentUser.email}</p>
+                </div>
               </div>
             </div>
             <Button
@@ -366,31 +407,31 @@ const Account = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="sticky top-16 z-10 w-full grid grid-cols-2 gap-2 rounded-2xl border border-border/60 bg-background/95 p-1 shadow-sm backdrop-blur sm:static sm:grid-cols-4 sm:gap-0 sm:rounded-full">
+          <TabsList className="sticky top-16 z-10 flex h-auto w-full items-stretch gap-2 overflow-x-auto rounded-2xl border border-border/60 bg-background/95 p-1 shadow-sm backdrop-blur sm:static sm:grid sm:grid-cols-4 sm:gap-0 sm:overflow-visible sm:rounded-full">
             <TabsTrigger
               value="profile"
-              className="flex min-h-[52px] flex-col items-center justify-center gap-1.5 px-3 py-2 text-[11px] leading-tight sm:min-h-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm rounded-xl data-[state=active]:bg-foreground data-[state=active]:text-background"
+              className="flex min-h-[52px] min-w-[96px] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] leading-tight data-[state=active]:bg-foreground data-[state=active]:text-background sm:min-h-0 sm:min-w-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm"
             >
               <User className="w-4 h-4" />
               <span>Profile</span>
             </TabsTrigger>
             <TabsTrigger
               value="orders"
-              className="flex min-h-[52px] flex-col items-center justify-center gap-1.5 px-3 py-2 text-[11px] leading-tight sm:min-h-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm rounded-xl data-[state=active]:bg-foreground data-[state=active]:text-background"
+              className="flex min-h-[52px] min-w-[96px] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] leading-tight data-[state=active]:bg-foreground data-[state=active]:text-background sm:min-h-0 sm:min-w-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm"
             >
               <Package className="w-4 h-4" />
               <span>Orders</span>
             </TabsTrigger>
             <TabsTrigger
               value="payment"
-              className="flex min-h-[52px] flex-col items-center justify-center gap-1.5 px-3 py-2 text-[11px] leading-tight sm:min-h-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm rounded-xl data-[state=active]:bg-foreground data-[state=active]:text-background"
+              className="flex min-h-[52px] min-w-[96px] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] leading-tight data-[state=active]:bg-foreground data-[state=active]:text-background sm:min-h-0 sm:min-w-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm"
             >
               <CreditCard className="w-4 h-4" />
               <span>Payment</span>
             </TabsTrigger>
             <TabsTrigger
               value="settings"
-              className="flex min-h-[52px] flex-col items-center justify-center gap-1.5 px-3 py-2 text-[11px] leading-tight sm:min-h-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm rounded-xl data-[state=active]:bg-foreground data-[state=active]:text-background"
+              className="flex min-h-[52px] min-w-[96px] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] leading-tight data-[state=active]:bg-foreground data-[state=active]:text-background sm:min-h-0 sm:min-w-0 sm:flex-row sm:items-center sm:justify-center sm:space-x-2 sm:text-sm"
             >
               <Settings className="w-4 h-4" />
               <span>Settings</span>
@@ -398,102 +439,264 @@ const Account = () => {
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
-            <Card className="border-border/60 shadow-sm">
-              <CardHeader>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <CardTitle>Profile Information</CardTitle>
-                    <CardDescription>Update your personal information and contact details</CardDescription>
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
+              <Card className="border-border/60 shadow-sm">
+                <CardHeader className="space-y-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-1">
+                      <CardTitle>Profile Information</CardTitle>
+                      <CardDescription>Update your personal information and contact details</CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditing(!isEditing);
+                        setProfileMessage(null);
+                        setProfileError(null);
+                        if (isEditing) {
+                          setFormData({
+                            fullName: currentUser.fullName || "",
+                            email: currentUser.email || "",
+                            phone: currentUser.phone || "",
+                            accountType: currentUser.accountType || "customer",
+                            companyName: currentUser.companyName || "",
+                            companyRole: currentUser.companyRole || "",
+                            taxId: currentUser.taxId || "",
+                          });
+                        }
+                      }}
+                      className="flex w-full items-center justify-center space-x-2 rounded-full sm:w-auto"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>{isEditing ? "Cancel" : "Edit"}</span>
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsEditing(!isEditing);
-                      setProfileMessage(null);
-                      setProfileError(null);
-                    }}
-                    className="flex items-center space-x-2 w-full sm:w-auto justify-center rounded-full"
-                  >
-                    <Edit className="w-4 h-4" />
-                    <span>{isEditing ? "Cancel" : "Edit"}</span>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profileMessage && <p className="text-sm text-emerald-600">{profileMessage}</p>}
-                {profileError && <p className="text-sm text-red-600">{profileError}</p>}
-                {isEditing ? (
-                  <form onSubmit={handleProfileUpdate} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="fullName">Full Name</Label>
-                        <Input
-                          id="fullName"
-                          value={formData.fullName}
-                          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" type="email" value={formData.email} disabled />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                          id="phone"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          placeholder="+254 700 000 000"
-                        />
+                  <div className="rounded-2xl border border-border/60 bg-muted/30 p-4 sm:hidden">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-14 w-14 border border-border/60">
+                        <AvatarImage src="" />
+                        <AvatarFallback className="text-base">{initials}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="truncate text-base font-semibold text-foreground">{currentUser.fullName}</p>
+                        <p className="truncate text-sm text-muted-foreground">@{currentUser.username}</p>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <Button type="submit" className="w-full sm:w-auto rounded-full" disabled={isProfileSaving}>
-                        {isProfileSaving ? "Saving..." : "Save Changes"}
-                      </Button>
-                      <Button
-                        type="button"
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Badge variant="secondary">{toTitleCase(currentUser.role)}</Badge>
+                      <Badge
                         variant="outline"
-                        onClick={() => setIsEditing(false)}
-                        className="w-full sm:w-auto rounded-full"
+                        className={currentUser.isActive ? "border-emerald-200 text-emerald-700" : "border-red-200 text-red-700"}
                       >
-                        Cancel
-                      </Button>
+                        {currentUser.isActive ? "Active account" : "Inactive account"}
+                      </Badge>
                     </div>
-                  </form>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <User className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Full Name</p>
-                          <p className="text-sm text-muted-foreground">{currentUser.fullName}</p>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {profileMessage && <p className="text-sm text-emerald-600">{profileMessage}</p>}
+                  {profileError && <p className="text-sm text-red-600">{profileError}</p>}
+                  {isEditing ? (
+                    <form onSubmit={handleProfileUpdate} className="space-y-5">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="fullName">Full Name</Label>
+                          <Input
+                            id="fullName"
+                            value={formData.fullName}
+                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email</Label>
+                          <Input id="email" type="email" value={formData.email} disabled />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input
+                            id="phone"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            placeholder="+254 700 000 000"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="accountType">Account Type</Label>
+                          <select
+                            id="accountType"
+                            value={formData.accountType}
+                            onChange={(e) => setFormData({ ...formData, accountType: e.target.value })}
+                            className="h-10 w-full border border-input bg-background px-3 text-sm"
+                          >
+                            <option value="customer">Customer</option>
+                            <option value="contractor">Contractor</option>
+                            <option value="company">Company</option>
+                          </select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="companyName">Company Name</Label>
+                          <Input
+                            id="companyName"
+                            value={formData.companyName}
+                            onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                            placeholder="Optional"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="companyRole">Role / Department</Label>
+                          <Input
+                            id="companyRole"
+                            value={formData.companyRole}
+                            onChange={(e) => setFormData({ ...formData, companyRole: e.target.value })}
+                            placeholder="Procurement, Site manager, etc."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="taxId">Tax ID</Label>
+                          <Input
+                            id="taxId"
+                            value={formData.taxId}
+                            onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                            placeholder="Optional"
+                          />
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <Mail className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Email</p>
-                          <p className="text-sm text-muted-foreground">{currentUser.email}</p>
-                        </div>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <Button type="submit" className="w-full rounded-full sm:w-auto" disabled={isProfileSaving}>
+                          {isProfileSaving ? "Saving..." : "Save Changes"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setIsEditing(false);
+                            setFormData({
+                              fullName: currentUser.fullName || "",
+                              email: currentUser.email || "",
+                              phone: currentUser.phone || "",
+                              accountType: currentUser.accountType || "customer",
+                              companyName: currentUser.companyName || "",
+                              companyRole: currentUser.companyRole || "",
+                              taxId: currentUser.taxId || "",
+                            });
+                          }}
+                          className="w-full rounded-full sm:w-auto"
+                        >
+                          Cancel
+                        </Button>
                       </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <Phone className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Phone</p>
-                          <p className="text-sm text-muted-foreground">
+                    </form>
+                  ) : (
+                    <div className="space-y-5">
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-2xl border border-border/60 bg-background p-4">
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <User className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                            Full Name
+                          </p>
+                          <p className="mt-2 text-base font-semibold text-foreground">{currentUser.fullName}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">This is how your account appears across orders.</p>
+                        </div>
+                        <div className="rounded-2xl border border-border/60 bg-background p-4">
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <Mail className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Email</p>
+                          <p className="mt-2 break-all text-base font-semibold text-foreground">{currentUser.email}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">Used for sign in, receipts, and delivery updates.</p>
+                        </div>
+                        <div className="rounded-2xl border border-border/60 bg-background p-4">
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <Phone className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Phone</p>
+                          <p className="mt-2 text-base font-semibold text-foreground">
                             {currentUser.phone ? currentUser.phone : "Not provided"}
                           </p>
+                          <p className="mt-1 text-sm text-muted-foreground">Add one to make delivery coordination easier.</p>
+                        </div>
+                        <div className="rounded-2xl border border-border/60 bg-background p-4">
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <Settings className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Account Status</p>
+                          <p className="mt-2 text-base font-semibold text-foreground">
+                            {currentUser.isActive ? "Ready to shop" : "Needs attention"}
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <Badge variant="secondary">{toTitleCase(currentUser.role)}</Badge>
+                            <Badge
+                              variant="outline"
+                              className={currentUser.isActive ? "border-emerald-200 text-emerald-700" : "border-red-200 text-red-700"}
+                            >
+                              {currentUser.isActive ? "Active" : "Inactive"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-border/60 bg-background p-4">
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <Package className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Account Type</p>
+                          <p className="mt-2 text-base font-semibold text-foreground">{currentUser.accountType || "customer"}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">Used for trade pricing, quote rules, and company workflows.</p>
+                        </div>
+                        <div className="rounded-2xl border border-border/60 bg-background p-4">
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                            <Truck className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Company / Trade Role</p>
+                          <p className="mt-2 text-base font-semibold text-foreground">{currentUser.companyName || "Not provided"}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">{currentUser.companyRole || "Add your team role to streamline trade support."}</p>
                         </div>
                       </div>
                     </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="hidden border-border/60 bg-muted/20 shadow-sm xl:block">
+                <CardHeader className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16 border border-border/60">
+                      <AvatarImage src="" />
+                      <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <CardTitle className="truncate text-xl">{currentUser.fullName}</CardTitle>
+                      <CardDescription className="truncate">@{currentUser.username}</CardDescription>
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary">{toTitleCase(currentUser.role)}</Badge>
+                    <Badge
+                      variant="outline"
+                      className={currentUser.isActive ? "border-emerald-200 text-emerald-700" : "border-red-200 text-red-700"}
+                    >
+                      {currentUser.isActive ? "Active account" : "Inactive account"}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {profileHighlights.map(({ label, value, hint, icon: Icon }) => (
+                    <div key={label} className="rounded-2xl border border-border/60 bg-background px-4 py-3">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground">{label}</p>
+                          <p className="break-words text-sm text-muted-foreground">{value}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">

@@ -36,6 +36,11 @@ export interface AuthUser {
   role: AuthRole;
   isActive: boolean;
   phone?: string;
+  address?: string;
+  accountType?: "customer" | "contractor" | "company";
+  companyName?: string;
+  companyRole?: string;
+  taxId?: string;
 }
 
 export interface AuthSession {
@@ -234,6 +239,13 @@ export async function loginCustomer(email: string, password: string): Promise<Au
   return session;
 }
 
+export async function requestCustomerPasswordReset(email: string): Promise<{ ok: boolean; resetToken?: string }> {
+  return apiRequest<{ ok: boolean; resetToken?: string }>(`${CUSTOMER_AUTH_BASE_PATH}/request-password-reset`, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
 export async function logoutCustomer(allSessions = false): Promise<void> {
   await apiRequest<void>(`${CUSTOMER_AUTH_BASE_PATH}/logout`, {
     method: "POST",
@@ -256,6 +268,10 @@ export async function updateAccountProfile(payload: {
   fullName?: string;
   phone?: string;
   address?: string;
+  accountType?: "customer" | "contractor" | "company";
+  companyName?: string;
+  companyRole?: string;
+  taxId?: string;
 }): Promise<{ user: AuthUser }> {
   return apiRequest<{ user: AuthUser }>("/api/account/profile", {
     method: "PATCH",
@@ -335,6 +351,39 @@ export async function deletePaymentMethod(id: string): Promise<void> {
   });
 }
 
+export interface WishlistItem {
+  productId: string;
+  name: string;
+  sku: string;
+  category: string;
+  priceCents: number;
+  currency: string;
+  stock: number;
+  imageUrl: string;
+  createdAt: string;
+}
+
+export async function getWishlist(): Promise<WishlistItem[]> {
+  const data = await apiRequest<{ items: WishlistItem[] }>("/api/account/wishlist");
+  return data.items.map((item) => ({
+    ...item,
+    imageUrl: resolveAssetUrl(item.imageUrl),
+  }));
+}
+
+export async function addWishlistItem(productId: string): Promise<void> {
+  await apiRequest<void>("/api/account/wishlist", {
+    method: "POST",
+    body: JSON.stringify({ productId }),
+  });
+}
+
+export async function removeWishlistItem(productId: string): Promise<void> {
+  await apiRequest<void>(`/api/account/wishlist/${productId}`, {
+    method: "DELETE",
+  });
+}
+
 function mapProduct(product: Product): Product {
   const rawImageUrls = Array.isArray((product as { imageUrls?: unknown }).imageUrls)
     ? ((product as { imageUrls?: unknown }).imageUrls as string[])
@@ -361,6 +410,10 @@ function mapProduct(product: Product): Product {
     manuals: (product.manuals ?? []).map((manual) => ({
       ...manual,
       url: resolveAssetUrl(manual.url),
+    })),
+    bundles: (product.bundles ?? []).map((bundle) => ({
+      ...bundle,
+      imageUrl: resolveAssetUrl(bundle.imageUrl),
     })),
     weightKg: product.weightKg ?? 0,
     lengthCm: product.lengthCm ?? 0,
@@ -420,6 +473,45 @@ export interface Product {
   status: string;
   imageUrl: string;
   imageUrls?: string[];
+  badges?: string[];
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  isLowStock?: boolean;
+  branchInventory?: Array<{
+    branchId: string;
+    slug: string;
+    name: string;
+    city: string;
+    address: string;
+    phone: string;
+    pickupEnabled: boolean;
+    stock: number;
+    pickupEta: string;
+  }>;
+  pickupLocations?: Array<{
+    branchId: string;
+    slug: string;
+    name: string;
+    city: string;
+    address: string;
+    phone: string;
+    pickupEnabled: boolean;
+    stock: number;
+    pickupEta: string;
+  }>;
+  bulkPricing?: Array<{
+    minQuantity: number;
+    priceCents: number;
+    label: string;
+  }>;
+  bundles?: Array<{
+    productId: string;
+    sku: string;
+    name: string;
+    imageUrl: string;
+    bundlePriceCents: number | null;
+    label: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
@@ -432,8 +524,13 @@ export async function getProducts(params?: {
   size?: string;
   voltage?: string;
   finish?: string;
+  compatibility?: string;
   inStock?: boolean;
   q?: string;
+  sort?: string;
+  pickupCity?: string;
+  priceMin?: string;
+  priceMax?: string;
   createdAfter?: string;
   createdBefore?: string;
 }): Promise<Product[]> {
@@ -445,8 +542,13 @@ export async function getProducts(params?: {
   if (params?.size) searchParams.append("size", params.size);
   if (params?.voltage) searchParams.append("voltage", params.voltage);
   if (params?.finish) searchParams.append("finish", params.finish);
+  if (params?.compatibility) searchParams.append("compatibility", params.compatibility);
   if (typeof params?.inStock === "boolean") searchParams.append("inStock", String(params.inStock));
   if (params?.q) searchParams.append("q", params.q);
+  if (params?.sort) searchParams.append("sort", params.sort);
+  if (params?.pickupCity) searchParams.append("pickupCity", params.pickupCity);
+  if (params?.priceMin) searchParams.append("priceMin", params.priceMin);
+  if (params?.priceMax) searchParams.append("priceMax", params.priceMax);
   if (params?.createdAfter) searchParams.append("createdAfter", params.createdAfter);
   if (params?.createdBefore) searchParams.append("createdBefore", params.createdBefore);
   
@@ -466,6 +568,97 @@ export async function getProductsBulk(ids: string[]): Promise<Product[]> {
     body: JSON.stringify({ ids }),
   });
   return data.map(mapProduct);
+}
+
+export interface ProductFacetEntry {
+  value: string;
+  count: number;
+}
+
+export interface ProductFacets {
+  total: number;
+  categories: ProductFacetEntry[];
+  brands: ProductFacetEntry[];
+  materials: ProductFacetEntry[];
+  voltages: ProductFacetEntry[];
+  finishes: ProductFacetEntry[];
+  compatibilities: ProductFacetEntry[];
+  availability: {
+    inStock: number;
+    outOfStock: number;
+  };
+  priceRange: {
+    min: number;
+    max: number;
+  };
+}
+
+export async function getProductFacets(params?: {
+  status?: string;
+  category?: string;
+  brand?: string;
+  material?: string;
+  size?: string;
+  voltage?: string;
+  finish?: string;
+  compatibility?: string;
+  inStock?: boolean;
+  q?: string;
+  pickupCity?: string;
+  priceMin?: string;
+  priceMax?: string;
+}): Promise<ProductFacets> {
+  const searchParams = new URLSearchParams();
+  if (params?.status) searchParams.append("status", params.status);
+  if (params?.category) searchParams.append("category", params.category);
+  if (params?.brand) searchParams.append("brand", params.brand);
+  if (params?.material) searchParams.append("material", params.material);
+  if (params?.size) searchParams.append("size", params.size);
+  if (params?.voltage) searchParams.append("voltage", params.voltage);
+  if (params?.finish) searchParams.append("finish", params.finish);
+  if (params?.compatibility) searchParams.append("compatibility", params.compatibility);
+  if (typeof params?.inStock === "boolean") searchParams.append("inStock", String(params.inStock));
+  if (params?.q) searchParams.append("q", params.q);
+  if (params?.pickupCity) searchParams.append("pickupCity", params.pickupCity);
+  if (params?.priceMin) searchParams.append("priceMin", params.priceMin);
+  if (params?.priceMax) searchParams.append("priceMax", params.priceMax);
+
+  const query = searchParams.toString();
+  return apiRequest<ProductFacets>(`/api/products/facets${query ? `?${query}` : ""}`);
+}
+
+export interface ProductSearchSuggestion {
+  productId?: string;
+  label: string;
+  sku?: string;
+  category?: string;
+  imageUrl?: string;
+  highlight?: string;
+  type: "popular" | "alias" | "sku" | "product";
+}
+
+export async function getProductSearchSuggestions(q: string): Promise<ProductSearchSuggestion[]> {
+  const data = await apiRequest<{ items: ProductSearchSuggestion[] }>(
+    `/api/products/search/suggest?q=${encodeURIComponent(q)}`
+  );
+  return data.items.map((item) => ({
+    ...item,
+    imageUrl: resolveAssetUrl(item.imageUrl),
+  }));
+}
+
+export async function getRecommendations(params?: {
+  productId?: string;
+  sessionId?: string;
+  limit?: number;
+}): Promise<Product[]> {
+  const searchParams = new URLSearchParams();
+  if (params?.productId) searchParams.append("productId", params.productId);
+  if (params?.sessionId) searchParams.append("sessionId", params.sessionId);
+  if (typeof params?.limit === "number") searchParams.append("limit", String(params.limit));
+  const query = searchParams.toString();
+  const data = await apiRequest<{ items: Product[] }>(`/api/products/recommendations${query ? `?${query}` : ""}`);
+  return data.items.map(mapProduct);
 }
 
 export interface ProductReview {
@@ -597,6 +790,8 @@ export interface OrderResponse {
   paymentStatus?: string;
   paymentMethod?: string;
   paymentReference?: string;
+  promoCode?: string;
+  discountCents?: number;
   subtotalCents: number;
   taxCents: number;
   shippingCents: number;
@@ -636,6 +831,10 @@ export async function createOrder(payload: {
   totals: {
     taxCents: number;
     shippingCents: number;
+  };
+  promo?: {
+    code: string;
+    discountCents?: number;
   };
   payment?: {
     method: "card" | "mpesa" | "cod";
@@ -759,4 +958,63 @@ export async function upsertAbandonedCart(payload: {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+export interface PromoValidationResult {
+  valid: boolean;
+  message: string;
+  code: string;
+  description?: string;
+  discountCents: number;
+}
+
+export async function validatePromoCode(payload: {
+  code: string;
+  subtotalCents: number;
+  accountType?: "customer" | "contractor" | "company";
+  userId?: string;
+}): Promise<PromoValidationResult> {
+  return apiRequest<PromoValidationResult>("/api/marketing/promos/validate", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export interface QuoteRequest {
+  id: string;
+  productId: string;
+  branchId: string;
+  productName?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  companyName: string;
+  accountType: "customer" | "contractor" | "company";
+  quantity: number;
+  notes: string;
+  status: string;
+  createdAt: string;
+}
+
+export async function createQuoteRequest(payload: {
+  productId?: string;
+  branchId?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  companyName?: string;
+  accountType?: "customer" | "contractor" | "company";
+  quantity: number;
+  notes?: string;
+}): Promise<QuoteRequest> {
+  const data = await apiRequest<{ quote: QuoteRequest }>("/api/quotes", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return data.quote;
+}
+
+export async function getMyQuoteRequests(): Promise<QuoteRequest[]> {
+  const data = await apiRequest<{ items: QuoteRequest[] }>("/api/quotes/mine");
+  return data.items;
 }

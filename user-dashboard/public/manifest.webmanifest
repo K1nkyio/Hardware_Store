@@ -1,0 +1,17 @@
+{
+  "name": "Raph Supply",
+  "short_name": "Raph",
+  "description": "Hardware, building materials, safety gear, and trade supplies with branch pickup support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f7f3",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

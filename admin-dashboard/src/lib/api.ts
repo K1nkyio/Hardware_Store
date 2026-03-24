@@ -252,6 +252,15 @@ export async function registerAdminSelf(
   return session;
 }
 
+export async function requestAdminPasswordReset(
+  email: string
+): Promise<{ ok: boolean; resetToken?: string }> {
+  return apiRequest<{ ok: boolean; resetToken?: string }>(`${ADMIN_AUTH_BASE_PATH}/request-password-reset`, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
 export async function logoutAdmin(allSessions = false): Promise<void> {
   await apiRequest<void>(`${ADMIN_AUTH_BASE_PATH}/logout`, {
     method: "POST",

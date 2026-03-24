@@ -64,6 +64,20 @@ function normalizeEmail(value) {
 function normalizeName(value) {
     return value.trim().replace(/\s+/g, " ");
 }
+function sanitizeUsername(value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]+/g, "_")
+        .replace(/^[_\-.]+|[_\-.]+$/g, "");
+}
+function normalizeUsername(value) {
+    const username = sanitizeUsername(value);
+    if (username.length < 3 || username.length > 30) {
+        throw new Error("Username must be 3-30 characters and use only letters, numbers, dots, hyphens, or underscores");
+    }
+    return username;
+}
 function hashToken(value) {
     return createHash("sha256").update(value).digest("hex");
 }
@@ -126,14 +140,25 @@ async function ensureEmailNotUsed(email) {
     if ((rowCount ?? 0) > 0)
         throw new Error("An account with that email already exists");
 }
+async function ensureUsernameNotUsed(username) {
+    const normalized = normalizeUsername(username);
+    const { rowCount } = await pool.query(`SELECT 1 FROM users WHERE lower(username) = $1
+     UNION ALL
+     SELECT 1 FROM admins WHERE lower(username) = $1
+     LIMIT 1`, [normalized]);
+    if ((rowCount ?? 0) > 0)
+        throw new Error("An account with that username already exists");
+}
 function mapCustomerRow(row) {
     const email = normalizeEmail(String(row.email ?? ""));
+    const username = sanitizeUsername(String(row.username ?? email.split("@")[0] ?? "user")) || "user";
     const fullName = normalizeName(String(row.profile_name ?? row.full_name ?? email.split("@")[0] ?? "Customer"));
     const emailVerified = Boolean(row.email_verified) || Boolean(row.email_verified_at);
     const status = String(row.status ?? (row.is_active ? "active" : "disabled")).toLowerCase();
     return {
         id: String(row.id),
         email,
+        username,
         fullName,
         role: "customer",
         isActive: status === "active",
@@ -141,11 +166,16 @@ function mapCustomerRow(row) {
         status,
         phone: row.phone ? String(row.phone) : undefined,
         address: row.address ? String(row.address) : undefined,
+        accountType: row.account_type === "contractor" || row.account_type === "company" ? row.account_type : "customer",
+        companyName: row.company_name ? String(row.company_name) : undefined,
+        companyRole: row.company_role ? String(row.company_role) : undefined,
+        taxId: row.tax_id ? String(row.tax_id) : undefined,
     };
 }
 async function getCustomerByEmail(email) {
     const { rows } = await pool.query(`SELECT
-      u.id, u.email, u.password_hash, u.full_name, up.name AS profile_name, up.phone, up.address,
+      u.id, u.email, u.username, u.password_hash, u.full_name, up.name AS profile_name, up.phone, up.address,
+      up.account_type, up.company_name, up.company_role, up.tax_id,
       u.status, u.is_active, u.email_verified, u.email_verified_at::text, u.locked_until::text
      FROM users u
      LEFT JOIN user_profiles up ON up.user_id = u.id
@@ -162,7 +192,8 @@ async function getCustomerByEmail(email) {
 }
 export async function getCustomerProfile(userId) {
     const { rows } = await pool.query(`SELECT
-      u.id, u.email, u.full_name, up.name AS profile_name, up.phone, up.address,
+      u.id, u.email, u.username, u.full_name, up.name AS profile_name, up.phone, up.address,
+      up.account_type, up.company_name, up.company_role, up.tax_id,
       u.status, u.is_active, u.email_verified, u.email_verified_at::text
      FROM users u
      LEFT JOIN user_profiles up ON up.user_id = u.id
@@ -204,12 +235,14 @@ async function consumeUserToken(token, type) {
 }
 export async function registerCustomer(payload) {
     const email = normalizeEmail(payload.email);
-    const fullName = normalizeName(payload.fullName);
+    const username = normalizeUsername(payload.username);
+    const fullName = normalizeName(payload.fullName || payload.username);
     await ensureEmailNotUsed(email);
+    await ensureUsernameNotUsed(username);
     const passwordHash = await hashPassword(payload.password, config.passwordHashRounds);
-    const { rows } = await pool.query(`INSERT INTO users (email, full_name, role, auth_domain, password_hash, email_verified, status, is_active)
-     VALUES ($1, $2, 'customer', 'customer', $3, false, 'active', true)
-     RETURNING id, email, full_name, status, is_active, email_verified, email_verified_at::text`, [email, fullName, passwordHash]);
+    const { rows } = await pool.query(`INSERT INTO users (email, username, full_name, role, auth_domain, password_hash, email_verified, status, is_active)
+     VALUES ($1, $2, $3, 'customer', 'customer', $4, false, 'active', true)
+     RETURNING id, email, username, full_name, status, is_active, email_verified, email_verified_at::text`, [email, username, fullName, passwordHash]);
     await pool.query(`INSERT INTO user_profiles (user_id, name, phone, address)
      VALUES ($1, $2, $3, $4)
      ON CONFLICT (user_id)
@@ -252,6 +285,7 @@ export async function refreshCustomerSession(refreshToken) {
     const { rows } = await pool.query(`SELECT
       s.id, s.user_id, s.expires_at::text, s.revoked_at::text,
       u.id AS customer_id, u.email, u.full_name, up.name AS profile_name, up.phone, up.address,
+      up.account_type, up.company_name, up.company_role, up.tax_id,
       u.status, u.is_active, u.email_verified, u.email_verified_at::text
      FROM user_sessions s
      INNER JOIN users u ON u.id = s.user_id
@@ -376,11 +410,13 @@ function normalizeAdminRole(role) {
 }
 function mapAdminRow(row) {
     const email = normalizeEmail(String(row.email ?? ""));
+    const username = sanitizeUsername(String(row.username ?? email.split("@")[0] ?? "admin")) || "admin";
     const fullName = normalizeName(String(row.full_name ?? email.split("@")[0] ?? "Admin"));
     const status = String(row.status ?? "active").toLowerCase();
     return {
         id: String(row.id),
         email,
+        username,
         fullName,
         role: normalizeAdminRole(String(row.role ?? "viewer")),
         isActive: status === "active",
@@ -392,7 +428,7 @@ function mapAdminRow(row) {
 }
 async function getAdminByEmail(email) {
     const { rows } = await pool.query(`SELECT
-      id, email, full_name, password_hash, role, mfa_enabled, mfa_secret, mfa_recovery_codes,
+      id, email, username, full_name, password_hash, role, mfa_enabled, mfa_secret, mfa_recovery_codes,
       mfa_reset_required, status, locked_until::text
      FROM admins
      WHERE lower(email) = $1
@@ -411,7 +447,7 @@ async function getAdminByEmail(email) {
     };
 }
 export async function getAdminProfile(adminId) {
-    const { rows } = await pool.query(`SELECT id, email, full_name, role, mfa_enabled, mfa_reset_required, status
+    const { rows } = await pool.query(`SELECT id, email, username, full_name, role, mfa_enabled, mfa_reset_required, status
      FROM admins
      WHERE id = $1
      LIMIT 1`, [adminId]);
@@ -531,10 +567,11 @@ export async function seedSuperAdmin(payload, context) {
         throw new Error("An admin already exists. Use /admin/auth/register with super_admin auth.");
     }
     await ensureEmailNotUsed(payload.email);
+    await ensureUsernameNotUsed(payload.username);
     const hash = await hashPassword(payload.password, config.passwordHashRounds);
-    const { rows } = await pool.query(`INSERT INTO admins (email, full_name, password_hash, role, status)
-     VALUES ($1, $2, $3, 'super_admin', 'active')
-     RETURNING id, email, full_name, role, mfa_enabled, mfa_reset_required, status`, [normalizeEmail(payload.email), normalizeName(payload.fullName), hash]);
+    const { rows } = await pool.query(`INSERT INTO admins (email, username, full_name, password_hash, role, status)
+     VALUES ($1, $2, $3, $4, 'super_admin', 'active')
+     RETURNING id, email, username, full_name, role, mfa_enabled, mfa_reset_required, status`, [normalizeEmail(payload.email), normalizeUsername(payload.username), normalizeName(payload.fullName), hash]);
     const user = mapAdminRow(rows[0]);
     await pool.query(`INSERT INTO admin_roles (admin_id, role)
      VALUES ($1, 'super_admin')
@@ -551,16 +588,34 @@ export async function seedSuperAdmin(payload, context) {
 }
 export async function registerAdmin(payload) {
     await ensureEmailNotUsed(payload.email);
+    await ensureUsernameNotUsed(payload.username);
     const hash = await hashPassword(payload.password, config.passwordHashRounds);
     const role = normalizeAdminRole(payload.role);
-    const { rows } = await pool.query(`INSERT INTO admins (email, full_name, password_hash, role, status)
-     VALUES ($1, $2, $3, $4, 'active')
-     RETURNING id, email, full_name, role, mfa_enabled, mfa_reset_required, status`, [normalizeEmail(payload.email), normalizeName(payload.fullName), hash, role]);
+    const { rows } = await pool.query(`INSERT INTO admins (email, username, full_name, password_hash, role, status)
+     VALUES ($1, $2, $3, $4, $5, 'active')
+     RETURNING id, email, username, full_name, role, mfa_enabled, mfa_reset_required, status`, [normalizeEmail(payload.email), normalizeUsername(payload.username), normalizeName(payload.fullName), hash, role]);
     const user = mapAdminRow(rows[0]);
     await pool.query(`INSERT INTO admin_roles (admin_id, role)
      VALUES ($1, $2)
      ON CONFLICT (admin_id) DO UPDATE SET role = EXCLUDED.role, assigned_at = now()`, [user.id, user.role]);
     return user;
+}
+export async function registerAdminSelf(payload, context) {
+    const user = await registerAdmin({
+        email: payload.email,
+        password: payload.password,
+        username: payload.username,
+        fullName: payload.fullName?.trim() ? payload.fullName : payload.username,
+        role: "viewer",
+    });
+    const session = await createAdminSession(user, context, false);
+    return {
+        user,
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+        accessTokenExpiresIn: session.accessTokenExpiresIn,
+        refreshTokenExpiresIn: session.refreshTokenExpiresIn,
+    };
 }
 export async function loginAdmin(payload, context) {
     const admin = await getAdminByEmail(payload.email);
@@ -613,7 +668,7 @@ export async function refreshAdminSession(refreshToken) {
         throw new Error("Invalid refresh token");
     const { rows } = await pool.query(`SELECT
       s.id, s.admin_id, s.expires_at::text, s.revoked_at::text,
-      a.id AS admin_ref, a.email, a.full_name, a.role, a.mfa_enabled, a.mfa_secret, a.mfa_reset_required, a.status
+      a.id AS admin_ref, a.email, a.username, a.full_name, a.role, a.mfa_enabled, a.mfa_secret, a.mfa_reset_required, a.status
      FROM admin_sessions s
      INNER JOIN admins a ON a.id = s.admin_id
      WHERE s.id = $1

@@ -18,6 +18,9 @@ import { customerCareRouter } from "./routes/customerCare";
 import { paymentsRouter } from "./routes/payments";
 import { authRouter } from "./routes/auth";
 import { adminAuthRouter } from "./admin/admin.routes";
+import { usersRouter } from "./routes/users";
+import { accountRouter } from "./routes/account";
+import { quotesRouter } from "./routes/quotes";
 import { createRateLimit } from "./middleware/rateLimit";
 import { writeErrorLog } from "./lib/audit";
 const app = express();
@@ -101,6 +104,10 @@ if (!fs.existsSync(config.uploadDir)) {
     fs.mkdirSync(config.uploadDir, { recursive: true });
 }
 app.use("/uploads", express.static(path.resolve(config.uploadDir)));
+// Handle favicon.ico requests to prevent 404 errors
+app.get("/favicon.ico", (_req, res) => {
+    res.status(204).end(); // No Content response
+});
 app.get("/health", (_req, res) => res.json({ ok: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/admin/auth", adminAuthRouter);
@@ -116,6 +123,9 @@ app.use("/api/inventory", inventoryRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/customer-care", customerCareRouter);
 app.use("/api/payments", paymentsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/account", accountRouter);
+app.use("/api/quotes", quotesRouter);
 app.use("/", seoRouter);
 // Error handler
 app.use(async (err, req, res, _next) => {

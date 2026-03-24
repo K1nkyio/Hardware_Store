@@ -96,7 +96,13 @@ function statusForError(err: unknown): number {
 export async function seed(req: Request, res: Response, next: (err?: unknown) => void) {
   try {
     const body = RegisterAdminSchema.parse({ ...req.body, role: "super_admin" });
-    const session = await seedSuperAdmin(body, getSessionContext(req));
+    const session = await seedSuperAdmin(
+      {
+        ...body,
+        fullName: body.fullName ?? body.username,
+      },
+      getSessionContext(req)
+    );
     setRefreshCookie(res, "admin", session.refreshToken);
     return res.status(201).json({
       user: session.user,
@@ -118,7 +124,10 @@ export async function register(req: Request, res: Response, next: (err?: unknown
   try {
     const actor = getActor(req);
     const body = RegisterAdminSchema.parse(req.body);
-    const user = await registerAdmin(body);
+    const user = await registerAdmin({
+      ...body,
+      fullName: body.fullName ?? body.username,
+    });
     await writeAuditLog({
       actorId: actor.id,
       actorRole: actor.role,
@@ -140,7 +149,13 @@ export async function register(req: Request, res: Response, next: (err?: unknown
 export async function selfRegister(req: Request, res: Response, next: (err?: unknown) => void) {
   try {
     const body = SelfRegisterAdminSchema.parse(req.body);
-    const session = await registerAdminSelf(body, getSessionContext(req));
+    const session = await registerAdminSelf(
+      {
+        ...body,
+        fullName: body.fullName ?? body.username,
+      },
+      getSessionContext(req)
+    );
     setRefreshCookie(res, "admin", session.refreshToken);
     return res.status(201).json({
       user: session.user,

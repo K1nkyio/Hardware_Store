@@ -38,6 +38,7 @@ authRouter.get("/", (req, res) => {
         admin: {
             base: `${baseUrl}/api/admin/auth`,
             login: `${baseUrl}/api/admin/auth/login`,
+            selfRegister: `${baseUrl}/api/admin/auth/self-register`,
             refresh: `${baseUrl}/api/admin/auth/refresh`,
             me: `${baseUrl}/api/admin/auth/me`,
         },

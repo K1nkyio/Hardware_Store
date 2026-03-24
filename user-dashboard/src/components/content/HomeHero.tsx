@@ -5,7 +5,7 @@ const HERO_SLIDES = [
   {
     image: largeHero,
     eyebrow: "Built for Real Projects",
-    title: "Hardware, plumbing, and electrical supplies delivered fast.",
+    title: "Hardware, safety, and building supplies delivered fast.",
     description: "Source quality materials for urgent repairs and planned upgrades in one checkout.",
   },
   {

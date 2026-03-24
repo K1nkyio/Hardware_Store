@@ -5,6 +5,7 @@ import { Product } from "@/lib/api";
 export type CartItem = {
   id: string;
   name: string;
+  sku: string;
   priceCents: number;
   currency: string;
   imageUrl: string;
@@ -85,6 +86,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           {
             id: product.id,
             name: product.name,
+            sku: product.sku,
             priceCents: product.priceCents,
             currency: product.currency,
             imageUrl: product.imageUrl,
@@ -102,6 +104,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         item.id === product.id
           ? {
               ...item,
+              sku: product.sku,
               quantity: nextQuantity,
               priceCents: product.priceCents,
               currency: product.currency,
@@ -149,6 +152,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           if (nextQuantity <= 0) return null;
           return {
             ...item,
+            sku: product.sku,
             priceCents: product.priceCents,
             currency: product.currency,
             imageUrl: product.imageUrl,
@@ -169,6 +173,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return (
             item.id !== current.id ||
             item.name !== current.name ||
+            item.sku !== current.sku ||
             item.priceCents !== current.priceCents ||
             item.currency !== current.currency ||
             item.imageUrl !== current.imageUrl ||

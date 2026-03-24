@@ -16,6 +16,7 @@ import {
   getShippingQuote,
   initializeCheckoutPayment,
   upsertAbandonedCart,
+  validatePromoCode,
   verifyCheckoutPayment,
   StorefrontPublicSettings,
   ShippingOption,
@@ -28,8 +29,14 @@ import {
   setTaxRatePercent,
 } from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
+import { useAuth } from "@/context/auth";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const Checkout = () => {
+  usePageMeta({
+    title: "Checkout | Raph Supply",
+    description: "Complete your hardware order with secure checkout, live shipping, promo validation, and branch pickup options.",
+  });
   const PENDING_CHECKOUT_KEY = "pending_checkout_order_v1";
   const fallbackPaymentMethods: StorefrontPublicSettings["payment"]["methods"] = [
     { id: "card", label: "Credit / Debit Card", enabled: true },
@@ -71,6 +78,8 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountCents: number; description?: string } | null>(null);
+  const [promoMessage, setPromoMessage] = useState("");
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState("");
@@ -83,6 +92,7 @@ const Checkout = () => {
   const inFlightInventorySyncKeyRef = useRef<string | null>(null);
 
   const { items: cartItems, updateQuantity, subtotalCents, syncItems, clear } = useCart();
+  const { currentUser } = useAuth();
   const currency = cartItems[0]?.currency ?? "USD";
   const formatTotal = (valueCents: number) => formatProductPrice({ priceCents: valueCents, currency });
 
@@ -150,11 +160,39 @@ const Checkout = () => {
   const requiresShipping = (selectedShipping?.id ?? shippingOption) !== "pickup";
   const shippingCents = selectedShipping?.amountCents ?? 0;
   const taxCents = calculateTaxCents(subtotalCents);
-  const totalCents = subtotalCents + shippingCents + taxCents;
+  const discountCents = appliedPromo?.discountCents ?? 0;
+  const totalCents = subtotalCents + shippingCents + taxCents - discountCents;
 
-  const handleDiscountSubmit = () => {
-    console.log("Discount code submitted:", discountCode);
-    setShowDiscountInput(false);
+  const handleDiscountSubmit = async () => {
+    if (!discountCode.trim()) {
+      setPromoMessage("Enter a promo code first.");
+      return;
+    }
+
+    try {
+      const result = await validatePromoCode({
+        code: discountCode.trim(),
+        subtotalCents,
+        accountType: currentUser?.accountType,
+        userId: currentUser?.id,
+      });
+      if (!result.valid) {
+        setAppliedPromo(null);
+        setPromoMessage(result.message);
+        return;
+      }
+      setAppliedPromo({
+        code: result.code,
+        discountCents: result.discountCents,
+        description: result.description,
+      });
+      setPromoMessage(result.message);
+      setShowDiscountInput(false);
+      trackEvent("promo_applied", { code: result.code, discountCents: result.discountCents }, customerDetails.email || undefined);
+    } catch (error) {
+      setAppliedPromo(null);
+      setPromoMessage(error instanceof Error ? error.message : "Unable to apply promo code.");
+    }
   };
 
   const handleCustomerDetailsChange = (field: string, value: string) => {
@@ -418,6 +456,12 @@ const Checkout = () => {
       taxCents,
       shippingCents,
     },
+    promo: appliedPromo
+      ? {
+          code: appliedPromo.code,
+          discountCents: appliedPromo.discountCents,
+        }
+      : undefined,
   });
 
   useEffect(() => {
@@ -844,12 +888,15 @@ const Checkout = () => {
                 {/* Discount Code Section */}
                 <div className="mt-8 pt-6 border-t border-muted-foreground/20">
                   {!showDiscountInput ? (
-                    <button
-                      onClick={() => setShowDiscountInput(true)}
-                      className="text-sm text-foreground underline hover:no-underline transition-all"
-                    >
-                      Discount code
-                    </button>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setShowDiscountInput(true)}
+                        className="text-sm text-foreground underline hover:no-underline transition-all"
+                      >
+                        {appliedPromo ? `Promo applied: ${appliedPromo.code}` : "Discount code"}
+                      </button>
+                      {promoMessage && <p className="text-xs text-muted-foreground">{promoMessage}</p>}
+                    </div>
                   ) : (
                     <div className="space-y-3">
                       <div className="flex gap-2">
@@ -867,6 +914,7 @@ const Checkout = () => {
                           Apply
                         </button>
                       </div>
+                      {promoMessage && <p className="text-xs text-muted-foreground">{promoMessage}</p>}
                     </div>
                   )}
                 </div>
@@ -888,6 +936,12 @@ const Checkout = () => {
                         : "Calculated at checkout"}
                     </span>
                   </div>
+                  {discountCents > 0 && (
+                    <div className="flex justify-between text-sm mt-2">
+                      <span className="text-muted-foreground">Promo ({appliedPromo?.code})</span>
+                      <span className="text-emerald-700">- {formatTotal(discountCents)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm mt-3 border-t border-muted-foreground/20 pt-3">
                     <span className="text-muted-foreground">Total</span>
                     <span className="text-foreground">{formatTotal(totalCents)}</span>

@@ -1,12 +1,19 @@
 import { z } from "zod";
 import { writeAuditLog } from "../lib/audit";
 import { getActor } from "../auth/auth.middleware";
-import { activateAdminMfa, clearRefreshCookie, getAdminProfile, getSessionContext, listAdminSessions, loginAdmin, logoutAdmin, readRefreshCookie, refreshAdminSession, registerAdmin, regenerateAdminRecoveryCodes, requestAdminPasswordReset, resetAdminMfa, resetAdminPassword, revokeAdminSession, seedSuperAdmin, setRefreshCookie, setupAdminMfa, } from "../auth/auth.service";
+import { activateAdminMfa, clearRefreshCookie, getAdminProfile, getSessionContext, listAdminSessions, loginAdmin, logoutAdmin, readRefreshCookie, refreshAdminSession, registerAdmin, registerAdminSelf, regenerateAdminRecoveryCodes, requestAdminPasswordReset, resetAdminMfa, resetAdminPassword, revokeAdminSession, seedSuperAdmin, setRefreshCookie, setupAdminMfa, } from "../auth/auth.service";
 const RegisterAdminSchema = z.object({
     email: z.string().email(),
+    username: z.string().trim().min(3).max(30).regex(/^[a-zA-Z0-9._-]+$/),
     password: z.string().min(8).max(128),
-    fullName: z.string().min(1).max(120),
+    fullName: z.string().min(1).max(120).optional(),
     role: z.enum(["viewer", "manager", "super_admin"]).default("viewer"),
+});
+const SelfRegisterAdminSchema = z.object({
+    email: z.string().email(),
+    username: z.string().trim().min(3).max(30).regex(/^[a-zA-Z0-9._-]+$/),
+    password: z.string().min(8).max(128),
+    fullName: z.string().min(1).max(120).optional(),
 });
 const LoginSchema = z.object({
     email: z.string().email(),
@@ -66,7 +73,10 @@ function statusForError(err) {
 export async function seed(req, res, next) {
     try {
         const body = RegisterAdminSchema.parse({ ...req.body, role: "super_admin" });
-        const session = await seedSuperAdmin(body, getSessionContext(req));
+        const session = await seedSuperAdmin({
+            ...body,
+            fullName: body.fullName ?? body.username,
+        }, getSessionContext(req));
         setRefreshCookie(res, "admin", session.refreshToken);
         return res.status(201).json({
             user: session.user,
@@ -88,7 +98,10 @@ export async function register(req, res, next) {
     try {
         const actor = getActor(req);
         const body = RegisterAdminSchema.parse(req.body);
-        const user = await registerAdmin(body);
+        const user = await registerAdmin({
+            ...body,
+            fullName: body.fullName ?? body.username,
+        });
         await writeAuditLog({
             actorId: actor.id,
             actorRole: actor.role,
@@ -98,6 +111,29 @@ export async function register(req, res, next) {
             details: { role: user.role },
         });
         return res.status(201).json({ user });
+    }
+    catch (err) {
+        const status = statusForError(err);
+        if (status >= 400 && status < 500 && err instanceof Error) {
+            return res.status(status).json({ message: err.message });
+        }
+        return next(err);
+    }
+}
+export async function selfRegister(req, res, next) {
+    try {
+        const body = SelfRegisterAdminSchema.parse(req.body);
+        const session = await registerAdminSelf({
+            ...body,
+            fullName: body.fullName ?? body.username,
+        }, getSessionContext(req));
+        setRefreshCookie(res, "admin", session.refreshToken);
+        return res.status(201).json({
+            user: session.user,
+            accessToken: session.accessToken,
+            accessTokenExpiresIn: session.accessTokenExpiresIn,
+            refreshTokenExpiresIn: session.refreshTokenExpiresIn,
+        });
     }
     catch (err) {
         const status = statusForError(err);

@@ -53,9 +53,124 @@ function extractImageUrlsFromSpecs(specs) {
         .map((value) => value.trim())
         .filter(Boolean);
 }
-function mapProduct(row) {
+function computeBadges(row, bestsellerIds) {
+    const reorderThreshold = row.reorder_threshold ?? LOW_STOCK_THRESHOLD;
+    const isLowStock = row.stock > 0 && row.stock <= reorderThreshold;
+    const isNew = Date.now() - new Date(row.created_at).getTime() <= 45 * 24 * 60 * 60 * 1000;
+    const isBestSeller = bestsellerIds.has(row.id);
+    return {
+        isLowStock,
+        isNew,
+        isBestSeller,
+        labels: [
+            isBestSeller ? "Bestseller" : "",
+            isNew ? "New" : "",
+            isLowStock ? "Low stock" : "",
+        ].filter(Boolean),
+    };
+}
+async function getProductCatalogMetadata(productIds) {
+    if (productIds.length === 0) {
+        return {
+            bestsellerIds: new Set(),
+            branchInventory: new Map(),
+            bulkPricing: new Map(),
+            bundles: new Map(),
+        };
+    }
+    const [branchRows, bulkRows, bundleRows, bestsellerRows] = await Promise.all([
+        pool.query(`SELECT
+        pbi.product_id::text,
+        bl.id::text AS branch_id,
+        bl.slug,
+        bl.name,
+        bl.city,
+        bl.address,
+        bl.phone,
+        bl.pickup_enabled,
+        pbi.stock,
+        pbi.pickup_eta
+       FROM product_branch_inventory pbi
+       INNER JOIN branch_locations bl ON bl.id = pbi.branch_id
+       WHERE pbi.product_id = ANY($1::uuid[])
+       ORDER BY bl.city, bl.name`, [productIds]),
+        pool.query(`SELECT product_id::text, min_quantity, price_cents, label
+       FROM product_bulk_pricing
+       WHERE product_id = ANY($1::uuid[])
+       ORDER BY min_quantity ASC`, [productIds]),
+        pool.query(`SELECT
+        pb.product_id::text,
+        linked.id::text AS bundled_product_id,
+        COALESCE(linked.sku, '') AS sku,
+        linked.name,
+        COALESCE(linked.image_url, '') AS image_url,
+        pb.bundle_price_cents,
+        COALESCE(pb.label, linked.name) AS label
+       FROM product_bundles pb
+       INNER JOIN products linked ON linked.id = pb.bundled_product_id
+       WHERE pb.product_id = ANY($1::uuid[])`, [productIds]),
+        pool.query(`SELECT oi.product_id::text, SUM(oi.quantity)::int AS sold
+       FROM order_items oi
+       INNER JOIN orders o ON o.id = oi.order_id
+       WHERE oi.product_id = ANY($1::uuid[])
+         AND o.status <> 'cancelled'
+       GROUP BY oi.product_id
+       ORDER BY sold DESC
+       LIMIT 12`, [productIds]),
+    ]);
+    const branchInventory = new Map();
+    for (const row of branchRows.rows) {
+        const list = branchInventory.get(row.product_id) ?? [];
+        list.push({
+            branchId: row.branch_id,
+            slug: row.slug,
+            name: row.name,
+            city: row.city,
+            address: row.address,
+            phone: row.phone ?? "",
+            pickupEnabled: Boolean(row.pickup_enabled),
+            stock: Number(row.stock ?? 0),
+            pickupEta: row.pickup_eta ?? "",
+        });
+        branchInventory.set(row.product_id, list);
+    }
+    const bulkPricing = new Map();
+    for (const row of bulkRows.rows) {
+        const list = bulkPricing.get(row.product_id) ?? [];
+        list.push({
+            minQuantity: Number(row.min_quantity),
+            priceCents: Number(row.price_cents),
+            label: row.label ?? "",
+        });
+        bulkPricing.set(row.product_id, list);
+    }
+    const bundles = new Map();
+    for (const row of bundleRows.rows) {
+        const list = bundles.get(row.product_id) ?? [];
+        list.push({
+            productId: row.bundled_product_id,
+            sku: row.sku ?? "",
+            name: row.name,
+            imageUrl: row.image_url ?? "",
+            bundlePriceCents: typeof row.bundle_price_cents === "number" ? Number(row.bundle_price_cents) : null,
+            label: row.label ?? row.name,
+        });
+        bundles.set(row.product_id, list);
+    }
+    return {
+        bestsellerIds: new Set(bestsellerRows.rows.map((row) => String(row.product_id))),
+        branchInventory,
+        bulkPricing,
+        bundles,
+    };
+}
+function mapProduct(row, metadata) {
     const primaryImage = row.image_url ?? "";
     const imageUrls = Array.from(new Set([primaryImage, ...extractImageUrlsFromSpecs(row.specs ?? null)].filter(Boolean)));
+    const branchInventory = metadata?.branchInventory.get(row.id) ?? [];
+    const bulkPricing = metadata?.bulkPricing.get(row.id) ?? [];
+    const bundles = metadata?.bundles.get(row.id) ?? [];
+    const badges = computeBadges(row, metadata?.bestsellerIds ?? new Set());
     return {
         id: row.id,
         name: row.name,
@@ -85,88 +200,378 @@ function mapProduct(row) {
         status: row.status,
         imageUrl: primaryImage,
         imageUrls,
+        badges: badges.labels,
+        isNew: badges.isNew,
+        isBestSeller: badges.isBestSeller,
+        isLowStock: badges.isLowStock,
+        branchInventory,
+        pickupLocations: branchInventory.filter((entry) => entry.pickupEnabled && entry.stock > 0),
+        bulkPricing,
+        bundles,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     };
 }
+function parseProductFilters(req) {
+    const inStockRaw = typeof req.query.inStock === "string" ? req.query.inStock : undefined;
+    const normalizeMoney = (value) => {
+        if (typeof value !== "string" || value.trim() === "")
+            return undefined;
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed) || parsed < 0)
+            return undefined;
+        return Math.round(parsed * 100);
+    };
+    return {
+        status: typeof req.query.status === "string" ? req.query.status : undefined,
+        category: typeof req.query.category === "string" ? req.query.category : undefined,
+        brand: typeof req.query.brand === "string" ? req.query.brand : undefined,
+        material: typeof req.query.material === "string" ? req.query.material : undefined,
+        size: typeof req.query.size === "string" ? req.query.size : undefined,
+        voltage: typeof req.query.voltage === "string" ? req.query.voltage : undefined,
+        finish: typeof req.query.finish === "string" ? req.query.finish : undefined,
+        compatibility: typeof req.query.compatibility === "string" ? req.query.compatibility : undefined,
+        q: typeof req.query.q === "string" ? req.query.q.trim() : undefined,
+        inStock: inStockRaw === "true" ? true : inStockRaw === "false" ? false : undefined,
+        createdAfter: typeof req.query.createdAfter === "string" ? req.query.createdAfter : undefined,
+        createdBefore: typeof req.query.createdBefore === "string" ? req.query.createdBefore : undefined,
+        pickupCity: typeof req.query.pickupCity === "string" ? req.query.pickupCity : undefined,
+        priceMinCents: normalizeMoney(req.query.priceMin),
+        priceMaxCents: normalizeMoney(req.query.priceMax),
+    };
+}
+function buildProductWhere(filters) {
+    const params = [];
+    const where = [];
+    if (filters.status) {
+        params.push(filters.status);
+        where.push(`status = $${params.length}`);
+    }
+    if (filters.category) {
+        const normalizedCategory = filters.category.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        params.push(`%${normalizedCategory}%`);
+        where.push(`regexp_replace(lower(category), '[^a-z0-9]+', ' ', 'g') ILIKE $${params.length}`);
+    }
+    if (filters.brand) {
+        params.push(`%${filters.brand}%`);
+        where.push(`brand ILIKE $${params.length}`);
+    }
+    if (filters.material) {
+        params.push(`%${filters.material}%`);
+        where.push(`material ILIKE $${params.length}`);
+    }
+    if (filters.size) {
+        params.push(`%${filters.size}%`);
+        where.push(`size ILIKE $${params.length}`);
+    }
+    if (filters.voltage) {
+        params.push(`%${filters.voltage}%`);
+        where.push(`voltage ILIKE $${params.length}`);
+    }
+    if (filters.finish) {
+        params.push(`%${filters.finish}%`);
+        where.push(`finish ILIKE $${params.length}`);
+    }
+    if (filters.compatibility) {
+        params.push(`%${filters.compatibility}%`);
+        where.push(`compatibility ILIKE $${params.length}`);
+    }
+    if (typeof filters.inStock === "boolean") {
+        where.push(filters.inStock ? "stock > 0" : "stock <= 0");
+    }
+    if (typeof filters.priceMinCents === "number") {
+        params.push(filters.priceMinCents);
+        where.push(`price_cents >= $${params.length}`);
+    }
+    if (typeof filters.priceMaxCents === "number") {
+        params.push(filters.priceMaxCents);
+        where.push(`price_cents <= $${params.length}`);
+    }
+    if (filters.pickupCity) {
+        params.push(`%${filters.pickupCity}%`);
+        where.push(`EXISTS (
+        SELECT 1
+        FROM product_branch_inventory pbi
+        INNER JOIN branch_locations bl ON bl.id = pbi.branch_id
+        WHERE pbi.product_id = products.id
+          AND pbi.stock > 0
+          AND bl.pickup_enabled = true
+          AND bl.city ILIKE $${params.length}
+      )`);
+    }
+    if (filters.q) {
+        params.push(`%${filters.q}%`);
+        const idx = params.length;
+        where.push(`(name ILIKE $${idx}
+        OR sku ILIKE $${idx}
+        OR category ILIKE $${idx}
+        OR brand ILIKE $${idx}
+        OR compatibility ILIKE $${idx}
+        OR EXISTS (
+          SELECT 1 FROM product_search_aliases psa
+          WHERE psa.product_id = products.id
+            AND psa.alias ILIKE $${idx}
+        ))`);
+    }
+    if (filters.createdAfter) {
+        const parsed = new Date(filters.createdAfter);
+        if (Number.isNaN(parsed.getTime())) {
+            throw new Error("Invalid createdAfter date");
+        }
+        params.push(parsed.toISOString());
+        where.push(`created_at >= $${params.length}::timestamptz`);
+    }
+    if (filters.createdBefore) {
+        const parsed = new Date(filters.createdBefore);
+        if (Number.isNaN(parsed.getTime())) {
+            throw new Error("Invalid createdBefore date");
+        }
+        params.push(parsed.toISOString());
+        where.push(`created_at < $${params.length}::timestamptz`);
+    }
+    return {
+        params,
+        whereSql: where.length ? `WHERE ${where.join(" AND ")}` : "",
+    };
+}
+function buildProductOrderBy(sort, q, params) {
+    if (q) {
+        params.push(q.toLowerCase());
+        const exactIdx = params.length;
+        params.push(`%${q}%`);
+        const likeIdx = params.length;
+        return `ORDER BY
+      CASE
+        WHEN lower(COALESCE(sku, '')) = $${exactIdx} THEN 0
+        WHEN lower(name) = $${exactIdx} THEN 1
+        WHEN EXISTS (
+          SELECT 1 FROM product_search_aliases psa
+          WHERE psa.product_id = products.id
+            AND lower(psa.alias) = $${exactIdx}
+        ) THEN 2
+        WHEN lower(name) LIKE lower($${likeIdx}) THEN 3
+        WHEN lower(brand) LIKE lower($${likeIdx}) THEN 4
+        ELSE 5
+      END,
+      created_at DESC`;
+    }
+    switch (sort) {
+        case "price-low":
+            return "ORDER BY price_cents ASC, created_at DESC";
+        case "price-high":
+            return "ORDER BY price_cents DESC, created_at DESC";
+        case "name":
+            return "ORDER BY name ASC";
+        case "newest":
+            return "ORDER BY created_at DESC";
+        default:
+            return "ORDER BY created_at DESC";
+    }
+}
 productsRouter.get("/", async (req, res, next) => {
     try {
-        const status = typeof req.query.status === "string" ? req.query.status : undefined;
-        const category = typeof req.query.category === "string" ? req.query.category : undefined;
-        const brand = typeof req.query.brand === "string" ? req.query.brand : undefined;
-        const material = typeof req.query.material === "string" ? req.query.material : undefined;
-        const size = typeof req.query.size === "string" ? req.query.size : undefined;
-        const voltage = typeof req.query.voltage === "string" ? req.query.voltage : undefined;
-        const finish = typeof req.query.finish === "string" ? req.query.finish : undefined;
-        const q = typeof req.query.q === "string" ? req.query.q : undefined;
-        const inStockRaw = typeof req.query.inStock === "string" ? req.query.inStock : undefined;
-        const inStock = inStockRaw === "true" ? true : inStockRaw === "false" ? false : undefined;
-        const createdAfter = typeof req.query.createdAfter === "string" ? req.query.createdAfter : undefined;
-        const createdBefore = typeof req.query.createdBefore === "string" ? req.query.createdBefore : undefined;
-        const params = [];
-        const where = [];
-        if (status) {
-            params.push(status);
-            where.push(`status = $${params.length}`);
-        }
-        if (category) {
-            const normalizedCategory = category.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-            params.push(`%${normalizedCategory}%`);
-            where.push(`regexp_replace(lower(category), '[^a-z0-9]+', ' ', 'g') ILIKE $${params.length}`);
-        }
-        if (brand) {
-            params.push(`%${brand}%`);
-            where.push(`brand ILIKE $${params.length}`);
-        }
-        if (material) {
-            params.push(`%${material}%`);
-            where.push(`material ILIKE $${params.length}`);
-        }
-        if (size) {
-            params.push(`%${size}%`);
-            where.push(`size ILIKE $${params.length}`);
-        }
-        if (voltage) {
-            params.push(`%${voltage}%`);
-            where.push(`voltage ILIKE $${params.length}`);
-        }
-        if (finish) {
-            params.push(`%${finish}%`);
-            where.push(`finish ILIKE $${params.length}`);
-        }
-        if (typeof inStock === "boolean") {
-            where.push(inStock ? "stock > 0" : "stock <= 0");
-        }
-        if (q) {
-            params.push(`%${q}%`);
-            const idx = params.length;
-            where.push(`(name ILIKE $${idx} OR sku ILIKE $${idx} OR category ILIKE $${idx} OR brand ILIKE $${idx})`);
-        }
-        if (createdAfter) {
-            const parsed = new Date(createdAfter);
-            if (Number.isNaN(parsed.getTime())) {
-                return res.status(400).json({ message: "Invalid createdAfter date" });
-            }
-            params.push(parsed.toISOString());
-            where.push(`created_at >= $${params.length}::timestamptz`);
-        }
-        if (createdBefore) {
-            const parsed = new Date(createdBefore);
-            if (Number.isNaN(parsed.getTime())) {
-                return res.status(400).json({ message: "Invalid createdBefore date" });
-            }
-            params.push(parsed.toISOString());
-            where.push(`created_at < $${params.length}::timestamptz`);
-        }
-        const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+        const filters = parseProductFilters(req);
+        const { params, whereSql } = buildProductWhere(filters);
+        const sort = typeof req.query.sort === "string" ? req.query.sort : undefined;
+        const orderBy = buildProductOrderBy(sort, filters.q, params);
         const { rows } = await pool.query(`SELECT id, name, sku, category, description, brand, material, size, voltage, finish, compatibility, warranty, safety_info, specs, manuals,
               weight_kg, length_cm, width_cm, height_cm, backorderable, backorder_eta_days,
               price_cents, currency, stock, reorder_threshold, status, image_url, created_at::text, updated_at::text
        FROM products
        ${whereSql}
-       ORDER BY created_at DESC`, params);
+       ${orderBy}`, params);
         const parsed = z.array(ProductRowSchema).parse(rows);
-        res.json(parsed.map(mapProduct));
+        const metadata = await getProductCatalogMetadata(parsed.map((row) => row.id));
+        res.json(parsed.map((row) => mapProduct(row, metadata)));
+    }
+    catch (err) {
+        if (err instanceof Error && /Invalid created(After|Before) date/.test(err.message)) {
+            return res.status(400).json({ message: err.message });
+        }
+        next(err);
+    }
+});
+productsRouter.get("/facets", async (req, res, next) => {
+    try {
+        const filters = parseProductFilters(req);
+        const { params, whereSql } = buildProductWhere(filters);
+        const { rows } = await pool.query(`SELECT category, brand, material, voltage, finish, compatibility, price_cents, stock
+       FROM products
+       ${whereSql}`, params);
+        const countsFor = (values) => Array.from(values.reduce((acc, value) => {
+            const normalized = value.trim();
+            if (!normalized)
+                return acc;
+            acc.set(normalized, (acc.get(normalized) ?? 0) + 1);
+            return acc;
+        }, new Map()))
+            .map(([value, count]) => ({ value, count }))
+            .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+        const compatibilities = rows
+            .flatMap((row) => String(row.compatibility ?? "").split(/[,/]|(?:\s{2,})/))
+            .map((entry) => entry.trim())
+            .filter(Boolean);
+        res.json({
+            total: rows.length,
+            categories: countsFor(rows.map((row) => String(row.category ?? ""))),
+            brands: countsFor(rows.map((row) => String(row.brand ?? ""))),
+            materials: countsFor(rows.map((row) => String(row.material ?? ""))),
+            voltages: countsFor(rows.map((row) => String(row.voltage ?? ""))),
+            finishes: countsFor(rows.map((row) => String(row.finish ?? ""))),
+            compatibilities: countsFor(compatibilities).slice(0, 10),
+            availability: {
+                inStock: rows.filter((row) => Number(row.stock ?? 0) > 0).length,
+                outOfStock: rows.filter((row) => Number(row.stock ?? 0) <= 0).length,
+            },
+            priceRange: rows.reduce((acc, row) => {
+                const price = Number(row.price_cents ?? 0);
+                acc.min = Math.min(acc.min, price);
+                acc.max = Math.max(acc.max, price);
+                return acc;
+            }, { min: rows.length > 0 ? Number(rows[0].price_cents ?? 0) : 0, max: 0 }),
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+});
+productsRouter.get("/search/suggest", async (req, res, next) => {
+    try {
+        const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+        if (q.length < 2) {
+            return res.json({
+                items: [
+                    "Conduit fittings",
+                    "Circuit breakers",
+                    "Safety helmets",
+                    "Paint rollers",
+                    "PVC elbows",
+                ].map((label) => ({ label, type: "popular" })),
+            });
+        }
+        const { rows } = await pool.query(`SELECT
+        p.id::text,
+        p.name,
+        COALESCE(p.sku, '') AS sku,
+        COALESCE(p.category, '') AS category,
+        COALESCE(p.image_url, '') AS image_url,
+        COALESCE(
+          (
+            SELECT psa.alias
+            FROM product_search_aliases psa
+            WHERE psa.product_id = p.id
+              AND psa.alias ILIKE $1
+            ORDER BY length(psa.alias) ASC
+            LIMIT 1
+          ),
+          ''
+        ) AS matched_alias
+       FROM products p
+       WHERE p.status = 'active'
+         AND (
+           p.name ILIKE $1
+           OR p.sku ILIKE $1
+           OR p.brand ILIKE $1
+           OR p.category ILIKE $1
+           OR EXISTS (
+             SELECT 1
+             FROM product_search_aliases psa
+             WHERE psa.product_id = p.id
+               AND psa.alias ILIKE $1
+           )
+         )
+       ORDER BY
+         CASE
+           WHEN lower(COALESCE(p.sku, '')) = lower($2) THEN 0
+           WHEN lower(p.name) = lower($2) THEN 1
+           WHEN EXISTS (
+             SELECT 1
+             FROM product_search_aliases psa
+             WHERE psa.product_id = p.id
+               AND lower(psa.alias) = lower($2)
+           ) THEN 2
+           ELSE 3
+         END,
+         p.created_at DESC
+       LIMIT 8`, [`%${q}%`, q]);
+        res.json({
+            items: rows.map((row) => ({
+                productId: row.id,
+                label: row.name,
+                sku: row.sku,
+                category: row.category,
+                imageUrl: row.image_url,
+                highlight: row.matched_alias || row.sku || row.category,
+                type: row.matched_alias ? "alias" : row.sku ? "sku" : "product",
+            })),
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+});
+productsRouter.get("/recommendations", async (req, res, next) => {
+    try {
+        const productId = typeof req.query.productId === "string" ? req.query.productId : undefined;
+        const sessionId = typeof req.query.sessionId === "string" ? req.query.sessionId : undefined;
+        const limitRaw = typeof req.query.limit === "string" ? Number(req.query.limit) : 8;
+        const limit = Number.isFinite(limitRaw) ? Math.min(Math.max(limitRaw, 1), 12) : 8;
+        let rows;
+        if (productId) {
+            rows = await pool.query(`WITH base AS (
+          SELECT category, brand
+          FROM products
+          WHERE id = $1
+        )
+        SELECT p.id, p.name, p.sku, p.category, p.description, p.brand, p.material, p.size, p.voltage, p.finish, p.compatibility, p.warranty, p.safety_info, p.specs, p.manuals,
+               p.weight_kg, p.length_cm, p.width_cm, p.height_cm, p.backorderable, p.backorder_eta_days,
+               p.price_cents, p.currency, p.stock, p.reorder_threshold, p.status, p.image_url, p.created_at::text, p.updated_at::text
+        FROM products p
+        CROSS JOIN base
+        WHERE p.id <> $1
+          AND p.status = 'active'
+          AND (
+            (base.category IS NOT NULL AND p.category = base.category)
+            OR (base.brand IS NOT NULL AND p.brand = base.brand)
+          )
+        ORDER BY p.stock > 0 DESC, p.created_at DESC
+        LIMIT $2`, [productId, limit]);
+        }
+        else if (sessionId) {
+            rows = await pool.query(`WITH viewed_categories AS (
+          SELECT DISTINCT payload->>'category' AS category
+          FROM analytics_events
+          WHERE session_id = $1
+            AND event_name = 'product_view'
+            AND payload->>'category' IS NOT NULL
+          ORDER BY category
+          LIMIT 4
+        )
+        SELECT p.id, p.name, p.sku, p.category, p.description, p.brand, p.material, p.size, p.voltage, p.finish, p.compatibility, p.warranty, p.safety_info, p.specs, p.manuals,
+               p.weight_kg, p.length_cm, p.width_cm, p.height_cm, p.backorderable, p.backorder_eta_days,
+               p.price_cents, p.currency, p.stock, p.reorder_threshold, p.status, p.image_url, p.created_at::text, p.updated_at::text
+        FROM products p
+        WHERE p.status = 'active'
+          AND EXISTS (
+            SELECT 1
+            FROM viewed_categories vc
+            WHERE vc.category = p.category
+          )
+        ORDER BY p.stock > 0 DESC, p.created_at DESC
+        LIMIT $2`, [sessionId, limit]);
+        }
+        else {
+            rows = await pool.query(`SELECT id, name, sku, category, description, brand, material, size, voltage, finish, compatibility, warranty, safety_info, specs, manuals,
+                weight_kg, length_cm, width_cm, height_cm, backorderable, backorder_eta_days,
+                price_cents, currency, stock, reorder_threshold, status, image_url, created_at::text, updated_at::text
+         FROM products
+         WHERE status = 'active'
+         ORDER BY stock > 0 DESC, created_at DESC
+         LIMIT $1`, [limit]);
+        }
+        const parsed = z.array(ProductRowSchema).parse(rows.rows);
+        const metadata = await getProductCatalogMetadata(parsed.map((row) => row.id));
+        res.json({ items: parsed.map((row) => mapProduct(row, metadata)) });
     }
     catch (err) {
         next(err);
@@ -181,7 +586,8 @@ productsRouter.post("/bulk", async (req, res, next) => {
        FROM products
        WHERE id = ANY($1::uuid[])`, [body.ids]);
         const parsed = z.array(ProductRowSchema).parse(rows);
-        res.json(parsed.map(mapProduct));
+        const metadata = await getProductCatalogMetadata(parsed.map((row) => row.id));
+        res.json(parsed.map((row) => mapProduct(row, metadata)));
     }
     catch (err) {
         next(err);
@@ -293,7 +699,8 @@ productsRouter.get("/:id", async (req, res, next) => {
         if (rows.length === 0)
             return res.status(404).json({ message: "Not found" });
         const parsed = ProductRowSchema.parse(rows[0]);
-        res.json(mapProduct(parsed));
+        const metadata = await getProductCatalogMetadata([parsed.id]);
+        res.json(mapProduct(parsed, metadata));
     }
     catch (err) {
         next(err);

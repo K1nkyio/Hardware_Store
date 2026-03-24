@@ -3,8 +3,9 @@ import { getActor } from "./auth.middleware";
 import { clearRefreshCookie, getSessionContext, listCustomerSessions, loginCustomer, readRefreshCookie, refreshCustomerSession, registerCustomer, requestCustomerEmailVerification, requestCustomerPasswordReset, resetCustomerPassword, revokeCustomerSession, setRefreshCookie, verifyCustomerEmail, logoutCustomer, getCustomerProfile, } from "./auth.service";
 const RegisterSchema = z.object({
     email: z.string().email(),
+    username: z.string().trim().min(3).max(30).regex(/^[a-zA-Z0-9._-]+$/),
     password: z.string().min(8).max(128),
-    fullName: z.string().min(1).max(120),
+    fullName: z.string().min(1).max(120).optional(),
     phone: z.string().optional(),
     address: z.string().optional(),
 });
@@ -48,7 +49,10 @@ function statusForError(err) {
 export async function register(req, res, next) {
     try {
         const body = RegisterSchema.parse(req.body);
-        const result = await registerCustomer(body);
+        const result = await registerCustomer({
+            ...body,
+            fullName: body.fullName ?? body.username,
+        });
         return res.status(201).json({
             user: result.user,
             verificationRequired: true,

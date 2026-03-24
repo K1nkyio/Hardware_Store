@@ -4,132 +4,118 @@ import Footer from "../components/footer/Footer";
 
 const PrivacyPolicy = () => {
   useEffect(() => {
-    document.title = "Privacy Policy - Linea Jewelry";
+    document.title = "Privacy Policy - Raph Supply";
   }, []);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="pt-6">
-        <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="mx-auto max-w-4xl px-6 py-12">
           <header className="mb-12 text-center">
-            <h1 className="text-4xl font-light text-foreground mb-4">Privacy Policy</h1>
-            <p className="text-muted-foreground">Last updated: January 15, 2024</p>
+            <h1 className="mb-4 text-4xl font-light text-foreground">Privacy Policy</h1>
+            <p className="text-muted-foreground">Last updated: March 23, 2026</p>
           </header>
 
           <div className="prose prose-lg max-w-none space-y-8">
             <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Introduction</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                At Linea Jewelry Inc. ("we," "our," or "us"), we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, make a purchase, or interact with our services.
+              <h2 className="mb-4 text-2xl font-light text-foreground">Introduction</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                At Raph Supply, we respect your privacy and are committed to protecting the personal information you share
+                with us when you browse our website, place orders, create an account, or contact customer care.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Information We Collect</h2>
+              <h2 className="mb-4 text-2xl font-light text-foreground">Information We Collect</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-light text-foreground mb-2">Personal Information</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    We may collect personal information that you provide directly to us, including:
-                  </p>
-                  <ul className="list-disc list-inside text-muted-foreground mt-2 space-y-1">
-                    <li>Name, email address, and contact information</li>
-                    <li>Billing and shipping addresses</li>
-                    <li>Payment information (processed securely through third-party providers)</li>
-                    <li>Account preferences and communication settings</li>
+                  <h3 className="mb-2 text-xl font-light text-foreground">Information you provide</h3>
+                  <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+                    <li>Name, email address, and contact details</li>
+                    <li>Shipping and billing addresses</li>
+                    <li>Order details and customer support messages</li>
+                    <li>Account preferences and saved payment method labels</li>
                   </ul>
                 </div>
-                
                 <div>
-                  <h3 className="text-xl font-light text-foreground mb-2">Usage Information</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    We automatically collect certain information about your device and usage patterns, including IP address, browser type, pages visited, and interaction data to improve our services and user experience.
+                  <h3 className="mb-2 text-xl font-light text-foreground">Information collected automatically</h3>
+                  <p className="leading-relaxed text-muted-foreground">
+                    We may collect usage and device information such as IP address, browser type, pages visited, order
+                    journey events, and device identifiers to help operate and improve the store.
                   </p>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">How We Use Your Information</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                We use the information we collect for various purposes, including:
-              </p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>Processing and fulfilling your orders</li>
-                <li>Providing customer support and responding to inquiries</li>
-                <li>Sending promotional communications (with your consent)</li>
-                <li>Improving our website functionality and user experience</li>
-                <li>Preventing fraud and ensuring security</li>
-                <li>Complying with legal obligations</li>
+              <h2 className="mb-4 text-2xl font-light text-foreground">How We Use Your Information</h2>
+              <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+                <li>Process and fulfill orders</li>
+                <li>Coordinate delivery, pickup, and customer support</li>
+                <li>Protect the store from fraud and abuse</li>
+                <li>Improve product discovery, checkout, and account experience</li>
+                <li>Send service and marketing messages where permitted</li>
+                <li>Comply with legal and tax obligations</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Information Sharing and Disclosure</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:
+              <h2 className="mb-4 text-2xl font-light text-foreground">Information Sharing</h2>
+              <p className="mb-4 leading-relaxed text-muted-foreground">
+                We do not sell your personal information. We may share limited data with third parties only when required to
+                run the business, including payment processors, logistics partners, support tools, hosting providers, or
+                authorities where required by law.
               </p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>With service providers who assist us in operating our business</li>
-                <li>When required by law or to protect our rights</li>
-                <li>In connection with a business transaction (merger, acquisition, etc.)</li>
-                <li>With your explicit consent</li>
+            </section>
+
+            <section>
+              <h2 className="mb-4 text-2xl font-light text-foreground">Data Security</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                We use reasonable technical and organizational measures to protect your information. However, no website,
+                network, or storage system can be guaranteed to be completely secure.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="mb-4 text-2xl font-light text-foreground">Cookies and Analytics</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                We use cookies and similar technologies to maintain sessions, remember preferences, analyze store usage,
+                and improve storefront performance. You can manage cookie behavior through your browser settings.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="mb-4 text-2xl font-light text-foreground">Your Choices</h2>
+              <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+                <li>Review and update certain account details from your account page</li>
+                <li>Request correction of inaccurate personal information</li>
+                <li>Request deletion where legally permissible</li>
+                <li>Opt out of non-essential promotional communications</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Data Security</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet or electronic storage is 100% secure.
+              <h2 className="mb-4 text-2xl font-light text-foreground">Changes to This Policy</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                We may update this policy from time to time. When we make material changes, we will update the date at the
+                top of this page.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Your Rights and Choices</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Depending on your location, you may have certain rights regarding your personal information:
-              </p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>Access to your personal information</li>
-                <li>Correction of inaccurate or incomplete information</li>
-                <li>Deletion of your personal information</li>
-                <li>Objection to or restriction of processing</li>
-                <li>Data portability</li>
-                <li>Withdrawal of consent (where applicable)</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Cookies and Tracking</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                We use cookies and similar tracking technologies to enhance your browsing experience, analyze website traffic, and personalize content. You can control cookie settings through your browser preferences, though this may affect website functionality.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Changes to This Policy</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new policy on our website and updating the "Last updated" date above.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-light text-foreground mb-4">Contact Us</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                If you have any questions about this Privacy Policy or our privacy practices, please contact us at:
-              </p>
-              <div className="mt-4 text-muted-foreground">
-                <p>Email: privacy@lineajewelry.com</p>
-                <p>Phone: +1 (212) 555-0123</p>
-                <p>Address: 123 Madison Avenue, New York, NY 10016</p>
+              <h2 className="mb-4 text-2xl font-light text-foreground">Contact Us</h2>
+              <div className="text-muted-foreground">
+                <p>Email: hello@raphsupply.com</p>
+                <p>Phone: +63 (2) 8555-0123</p>
+                <p>Address: 123 Hardware Avenue, Metro Manila, Philippines</p>
               </div>
             </section>
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

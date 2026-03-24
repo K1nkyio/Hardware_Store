@@ -17,10 +17,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import type { ProductFacets } from "@/lib/api";
 
 type FilterState = {
   q: string;
   productType: string;
+  compatibility: string;
+  pickupCity: string;
   availability: "any" | "in-stock" | "out-of-stock";
   priceMin: string;
   priceMax: string;
@@ -32,11 +35,12 @@ interface FilterSortBarProps {
   setFiltersOpen: (open: boolean) => void;
   itemCount: number;
   filters: FilterState;
+  facets?: ProductFacets;
   onApply: (filters: FilterState) => void;
   onClear: () => void;
 }
 
-const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount, filters, onApply, onClear }: FilterSortBarProps) => {
+const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount, filters, facets, onApply, onClear }: FilterSortBarProps) => {
   const [draft, setDraft] = useState(filters);
 
   useEffect(() => {
@@ -121,13 +125,41 @@ const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount, filters, onAppl
                   <Separator className="border-border" />
 
                   <div>
-                    <h3 className="text-sm font-light mb-4 text-foreground">Product Type</h3>
+                    <h3 className="text-sm font-light mb-4 text-foreground">Brand or Product Family</h3>
                     <Input
                       id="productType"
                       type="text"
                       value={draft.productType}
                       onChange={(e) => setDraft((prev) => ({ ...prev, productType: e.target.value }))}
-                      placeholder="e.g. Plumbing, Electrical, Safety"
+                      placeholder="e.g. Schneider, Crown, PVC"
+                      className="rounded-none"
+                    />
+                  </div>
+
+                  <Separator className="border-border" />
+
+                  <div>
+                    <h3 className="text-sm font-light mb-4 text-foreground">Compatibility</h3>
+                    <Input
+                      id="compatibility"
+                      type="text"
+                      value={draft.compatibility}
+                      onChange={(e) => setDraft((prev) => ({ ...prev, compatibility: e.target.value }))}
+                      placeholder="e.g. 20mm conduit, masonry, solar"
+                      className="rounded-none"
+                    />
+                  </div>
+
+                  <Separator className="border-border" />
+
+                  <div>
+                    <h3 className="text-sm font-light mb-4 text-foreground">Pickup Location</h3>
+                    <Input
+                      id="pickupCity"
+                      type="text"
+                      value={draft.pickupCity}
+                      onChange={(e) => setDraft((prev) => ({ ...prev, pickupCity: e.target.value }))}
+                      placeholder="e.g. Nairobi, Mombasa"
                       className="rounded-none"
                     />
                   </div>
@@ -230,6 +262,28 @@ const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount, filters, onAppl
           </Select>
         </div>
       </div>
+      {facets && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {facets.brands.slice(0, 4).map((facet) => (
+            <button
+              key={facet.value}
+              className="border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              onClick={() => onApply({ ...draft, productType: facet.value })}
+            >
+              {facet.value} ({facet.count})
+            </button>
+          ))}
+          {facets.compatibilities.slice(0, 3).map((facet) => (
+            <button
+              key={facet.value}
+              className="border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              onClick={() => onApply({ ...draft, compatibility: facet.value })}
+            >
+              {facet.value} ({facet.count})
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 };

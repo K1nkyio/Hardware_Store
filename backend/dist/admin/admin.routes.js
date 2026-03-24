@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { login, logout, me, mfaActivate, mfaRegenerateRecoveryCodes, mfaReset, mfaSetup, refresh, register, requestPasswordReset, resetPassword, revokeSession, seed, sessions, } from "./admin.controller";
+import { login, logout, me, mfaActivate, mfaRegenerateRecoveryCodes, mfaReset, mfaSetup, refresh, register, selfRegister, requestPasswordReset, resetPassword, revokeSession, seed, sessions, } from "./admin.controller";
 import { requireAdmin, requirePermission, requireRole } from "../auth/auth.middleware";
 export const adminAuthRouter = Router();
 adminAuthRouter.post("/seed-super-admin", seed);
+adminAuthRouter.post("/self-register", selfRegister);
 adminAuthRouter.post("/register", requireRole("super_admin"), register);
 adminAuthRouter.post("/login", login);
 adminAuthRouter.post("/refresh", refresh);

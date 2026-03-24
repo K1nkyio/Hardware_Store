@@ -20,6 +20,7 @@ import { authRouter } from "./routes/auth";
 import { adminAuthRouter } from "./admin/admin.routes";
 import { usersRouter } from "./routes/users";
 import { accountRouter } from "./routes/account";
+import { quotesRouter } from "./routes/quotes";
 import { createRateLimit } from "./middleware/rateLimit";
 import { writeErrorLog } from "./lib/audit";
 
@@ -151,6 +152,7 @@ app.use("/api/customer-care", customerCareRouter);
 app.use("/api/payments", paymentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/account", accountRouter);
+app.use("/api/quotes", quotesRouter);
 app.use("/", seoRouter);
 
 // Error handler

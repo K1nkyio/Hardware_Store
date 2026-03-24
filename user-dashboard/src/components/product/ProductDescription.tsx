@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import ReviewProduct from "./ReviewProduct";
 import {
   createProductQuestion,
+  formatProductPrice,
   getProductQuestions,
   getProductReviews,
   Product,
@@ -144,6 +145,56 @@ const ProductDescription = ({ product }: ProductDescriptionProps) => {
 
   return (
     <div className="space-y-0 mt-8 border-t border-border">
+      {(product.manuals?.length > 0 || product.bundles?.length) && (
+        <div className="border-b border-border py-6 space-y-6">
+          {product.manuals?.length > 0 && (
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Manuals & Datasheets</p>
+                <h3 className="text-base font-light text-foreground">Technical files surfaced first</h3>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {product.manuals.map((manual) => (
+                  <a
+                    key={`${manual.label}-${manual.url}`}
+                    href={manual.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="border border-border px-4 py-3 text-sm text-foreground transition-colors hover:border-foreground"
+                  >
+                    <p>{manual.label}</p>
+                    <p className="text-xs text-muted-foreground">{manual.fileType || "Document"}</p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          {product.bundles && product.bundles.length > 0 && (
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Smart Bundles</p>
+                <h3 className="text-base font-light text-foreground">Frequently paired with this product</h3>
+              </div>
+              <div className="grid gap-3">
+                {product.bundles.map((bundle) => (
+                  <div key={bundle.productId} className="flex items-center justify-between border border-border px-4 py-3">
+                    <div>
+                      <p className="text-sm text-foreground">{bundle.name}</p>
+                      <p className="text-xs text-muted-foreground">{bundle.label}</p>
+                    </div>
+                    <p className="text-sm text-foreground">
+                      {bundle.bundlePriceCents
+                        ? formatProductPrice({ priceCents: bundle.bundlePriceCents, currency: product.currency })
+                        : "Bundle-ready"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="border-b border-border">
         <Button
           variant="ghost"

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { pool } from "../db/pool";
 import { writeAuditLog } from "../lib/audit";
+import { validatePromoCode } from "../lib/promos";
 import { getActor, requireRole } from "../middleware/auth";
 
 export const ordersRouter = Router();
@@ -54,6 +55,12 @@ const CreateOrderSchema = z.object({
     taxCents: z.number().int().nonnegative(),
     shippingCents: z.number().int().nonnegative(),
   }),
+  promo: z
+    .object({
+      code: z.string().trim().min(1),
+      discountCents: z.number().int().nonnegative().optional(),
+    })
+    .optional(),
   payment: z
     .object({
       method: z.enum(["card", "mpesa", "cod"]),
@@ -606,13 +613,37 @@ ordersRouter.post("/", async (req, res, next) => {
       });
     }
 
-    const totalCents = subtotalCents + body.totals.taxCents + body.totals.shippingCents;
+    const customerProfileRows = await client.query(
+      `SELECT u.id::text, COALESCE(up.account_type, 'customer') AS account_type
+       FROM users u
+       LEFT JOIN user_profiles up ON up.user_id = u.id
+       WHERE lower(u.email) = lower($1)
+       LIMIT 1`,
+      [body.customer.email]
+    );
+    const matchedCustomer = customerProfileRows.rows[0];
+    const validatedPromo = body.promo?.code
+      ? await validatePromoCode({
+          code: body.promo.code,
+          subtotalCents,
+          userId: matchedCustomer?.id ? String(matchedCustomer.id) : null,
+          accountType: matchedCustomer?.account_type ? String(matchedCustomer.account_type) : "customer",
+        })
+      : null;
+
+    if (validatedPromo && !validatedPromo.valid) {
+      throw new HttpError(400, validatedPromo.message);
+    }
+
+    const discountCents = validatedPromo?.discountCents ?? 0;
+    const totalCents = subtotalCents + body.totals.taxCents + body.totals.shippingCents - discountCents;
     const customerName = `${body.customer.firstName} ${body.customer.lastName}`.trim();
     const slaDueAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     const normalizedPaymentCurrency = body.payment?.currency?.toUpperCase();
     const normalizedPaymentStatus = body.payment?.status?.toLowerCase();
+    const isOnlinePayment = body.payment?.method === "card" || body.payment?.method === "mpesa";
 
-    if (body.payment) {
+    if (body.payment && isOnlinePayment) {
       if (normalizedPaymentStatus !== "successful") {
         throw new HttpError(400, "Online payment must be successful before placing the order.");
       }
@@ -630,10 +661,10 @@ ordersRouter.post("/", async (req, res, next) => {
       `INSERT INTO orders (
         customer_email, customer_name, customer_phone, status,
         payment_method, payment_provider, payment_reference, payment_status, payment_metadata,
-        currency, subtotal_cents, tax_cents, shipping_cents, total_cents,
+        currency, subtotal_cents, tax_cents, shipping_cents, discount_cents, total_cents, promo_code,
         shipping_method, shipping_address, billing_address, sla_due_at
       )
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::timestamptz)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20::timestamptz)
        RETURNING id, created_at::text`,
       [
         body.customer.email,
@@ -655,7 +686,9 @@ ordersRouter.post("/", async (req, res, next) => {
         subtotalCents,
         body.totals.taxCents,
         body.totals.shippingCents,
+        discountCents,
         totalCents,
+        validatedPromo?.code ?? null,
         body.shippingMethod ?? null,
         body.shippingAddress ?? null,
         body.billingAddress ?? null,
@@ -683,6 +716,14 @@ ordersRouter.post("/", async (req, res, next) => {
       );
     }
 
+    if (validatedPromo?.promoCodeId) {
+      await client.query(
+        `INSERT INTO promo_code_redemptions (promo_code_id, user_id, order_id, redeemed_code, discount_cents)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [validatedPromo.promoCodeId, matchedCustomer?.id ?? null, orderId, validatedPromo.code, discountCents]
+      );
+    }
+
     await client.query("COMMIT");
 
     res.status(201).json({
@@ -690,6 +731,8 @@ ordersRouter.post("/", async (req, res, next) => {
       currency,
       paymentStatus: normalizedPaymentStatus ?? "pending",
       paymentMethod: body.payment?.method ?? "",
+      promoCode: validatedPromo?.code ?? "",
+      discountCents,
       paymentReference: body.payment?.txRef ?? "",
       subtotalCents,
       taxCents: body.totals.taxCents,
